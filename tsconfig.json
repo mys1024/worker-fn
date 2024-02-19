@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "src",
+    "test"
+  ],
+  "exclude": [
+    "**/dist",
+    "**/node_modules",
+    "**/coverage"
+  ]
+}
