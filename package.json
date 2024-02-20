@@ -1,7 +1,7 @@
 {
   "name": "worker-fn",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "packageManager": "pnpm@8.15.3",
   "description": "Run functions using Web Worker.",
   "author": "mys1024",
