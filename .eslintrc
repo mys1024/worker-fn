@@ -1,6 +1,7 @@
 {
   "extends": ["@antfu/ts"],
   "rules": {
-    "no-console": "off"
+    "no-console": "off",
+    "jsdoc/check-param-names": "off"
   }
 }
