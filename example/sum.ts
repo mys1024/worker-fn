@@ -1,4 +1,4 @@
-import { useWorkerFn } from "jsr:@mys1024/worker-fn@0.9";
+import { useWorkerFn } from "jsr:@mys1024/worker-fn@1";
 import type { Sum } from "./sum.worker.ts";
 
 const { fn: sum } = useWorkerFn<Sum>({

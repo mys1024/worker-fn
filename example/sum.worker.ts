@@ -1,4 +1,4 @@
-import { defineWorkerFn } from "jsr:@mys1024/worker-fn@0.9";
+import { defineWorkerFn } from "jsr:@mys1024/worker-fn@1";
 
 export type Sum = (a: number, b: number) => number;
 

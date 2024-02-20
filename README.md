@@ -9,7 +9,7 @@ This package is currently compatible with browsers and Deno, but not with Node.j
 In `sum.worker.ts`:
 
 ```typescript
-import { defineWorkerFn } from "jsr:@mys1024/worker-fn@0.9";
+import { defineWorkerFn } from "jsr:@mys1024/worker-fn@1";
 
 export type Sum = (a: number, b: number) => number;
 
@@ -22,7 +22,7 @@ defineWorkerFn<Sum>({
 In `sum.ts`:
 
 ```typescript
-import { useWorkerFn } from "jsr:@mys1024/worker-fn@0.9";
+import { useWorkerFn } from "jsr:@mys1024/worker-fn@1";
 import type { Sum } from "./sum.worker.ts";
 
 const { fn: sum } = useWorkerFn<Sum>({
