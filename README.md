@@ -9,30 +9,30 @@ This package is currently compatible with browsers and Deno, but not with Node.j
 In `sum.worker.ts`:
 
 ```typescript
-import { defineWorkerFn } from 'worker-fn'
+import { defineWorkerFn } from "jsr:@mys1024/worker-fn@0.9";
 
-export type Sum = (a: number, b: number) => number
+export type Sum = (a: number, b: number) => number;
 
 defineWorkerFn<Sum>({
-  name: 'sum',
+  name: "sum",
   fn: (a, b) => a + b,
-})
+});
 ```
 
 In `sum.ts`:
 
 ```typescript
-import { useWorkerFn } from 'worker-fn'
-import type { Sum } from './sum.worker.ts'
+import { useWorkerFn } from "jsr:@mys1024/worker-fn@0.9";
+import type { Sum } from "./sum.worker.ts";
 
 const { fn: sum } = useWorkerFn<Sum>({
-  name: 'sum',
-  worker: new Worker(new URL('./sum.worker.ts', import.meta.url), {
-    type: 'module',
+  name: "sum",
+  worker: new Worker(new URL("./sum.worker.ts", import.meta.url), {
+    type: "module",
   }),
-})
+});
 
-console.log(await sum(1, 2)) // 3
+console.log(await sum(1, 2));
 ```
 
 ## License
