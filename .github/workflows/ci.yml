@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - jsr
+  pull_request:
+    branches:
+      - jsr
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        deno-version: [v1.x, vx.x.x]
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+
+    name: deno ${{ matrix.deno-version }}, ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno-version }}
+
+      - name: Test
+        run: deno task test:cover
+
+      - name: Print coverage
+        run: deno task cover

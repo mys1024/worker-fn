@@ -1,6 +1,0 @@
-{
-  "extends": ["@antfu/ts"],
-  "rules": {
-    "no-console": "off"
-  }
-}

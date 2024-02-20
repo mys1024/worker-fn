@@ -23,7 +23,7 @@ In `sum.ts`:
 
 ```typescript
 import { useWorkerFn } from 'worker-fn'
-import type { Sum } from './sum.worker'
+import type { Sum } from './sum.worker.ts'
 
 const { fn: sum } = useWorkerFn<Sum>({
   name: 'sum',

@@ -1,0 +1,22 @@
+{
+  "name": "@mys1024/worker-fn",
+  "version": "0.9.3",
+  "tasks": {
+    "run":          "deno run --lock=deno.lock src/main.ts",
+    "run:watch":    "deno run --lock=deno.lock --watch src/main.ts",
+    "cache":        "deno cache --lock=deno.lock --lock-write src/main.ts src/**/*.test.ts",
+    "cache:reload": "deno cache --lock=deno.lock --reload src/main.ts src/**/*.test.ts",
+    "test":         "deno test",
+    "test:watch":   "deno test --watch",
+    "test:cover":   "deno test --coverage",
+    "cover":        "deno coverage",
+    "cover:html":   "deno coverage --html",
+    "publish:dry":  "deno publish --dry-run"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@0.216"
+  },
+  "exports": {
+    ".": "./src/main.ts"
+  }
+}
