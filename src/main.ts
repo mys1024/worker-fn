@@ -153,7 +153,7 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
       key,
       name,
       ret,
-    }, transfer as any);
+    }, transfer);
   });
 }
 
