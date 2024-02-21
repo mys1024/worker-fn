@@ -1,7 +1,11 @@
+/* -------------------------------------------------- types -------------------------------------------------- */
+
 /**
  * This is a global function in worker threads. It sends a message to the main thread.
  */
 declare function postMessage(data: any, transfer?: Transferable[]): void
+
+/* -------------------------------------------------- exports -------------------------------------------------- */
 
 /**
  * Call this function within the main thread to obtain a proxy function that executes the corresponding worker function defined within the worker thread.
@@ -109,7 +113,7 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
    */
   fn: FN
   /**
-   * Whether to transfer the return value or not. Transfer when the return value is of type `ArrayBuffer` by default.
+   * Whether to transfer the return value or not. When the return value is of Transferable type, it will be transferred by default.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
    */
@@ -135,7 +139,7 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
     // Determine whether to transfer the return value
     const transfer = typeof _transfer === 'boolean'
       ? _transfer ? [ret] as Transferable[] : undefined
-      : ret instanceof ArrayBuffer
+      : isTransferable(ret)
         ? [ret]
         : undefined
 
@@ -144,6 +148,32 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
       key,
       name,
       ret,
-    }, transfer as any)
+    }, transfer)
   })
+}
+
+/* -------------------------------------------------- utils -------------------------------------------------- */
+
+const _self = self as any
+
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects#supported_objects
+ */
+const transferableClasses = [
+  _self.ArrayBuffer,
+  _self.MessagePort,
+  _self.ReadableStream,
+  _self.WritableStream,
+  _self.TransformStream,
+  _self.WebTransportReceiveStream,
+  _self.WebTransportSendStream,
+  _self.AudioData,
+  _self.ImageBitmap,
+  _self.VideoFrame,
+  _self.OffscreenCanvas,
+  _self.RTCDataChannel,
+].filter(c => !!c)
+
+function isTransferable(val: any): val is Transferable {
+  return transferableClasses.some(c => val instanceof c)
 }
