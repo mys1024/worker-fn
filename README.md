@@ -37,4 +37,4 @@ console.log(await sum(1, 2));
 
 ## License
 
-MIT License © 2024-present mys1024
+MIT License © 2024-PRESENT mys1024
