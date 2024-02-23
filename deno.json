@@ -15,7 +15,7 @@
     "publish:dry": "deno publish --dry-run"
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@0.216"
+    "@std/assert": "jsr:@std/assert@0.217"
   },
   "exports": {
     ".": "./src/main.ts"
