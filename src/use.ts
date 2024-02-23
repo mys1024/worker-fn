@@ -13,6 +13,16 @@ interface LazyWorker {
   ttl?: number;
 }
 
+type WorkerThreadMessage<FN extends (...args: any[]) => any> =
+  & {
+    key: number;
+    name: string;
+  }
+  & (
+    | { ok: true; ret: Awaited<ReturnType<FN>>; err: undefined }
+    | { ok: false; ret: undefined; err: any }
+  );
+
 /**
  * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
  *
@@ -53,7 +63,7 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(
 
   // Proxy function
   function fn(...args: Parameters<FN>) {
-    return new Promise<Awaited<ReturnType<FN>>>((resolve) => {
+    return new Promise<Awaited<ReturnType<FN>>>((resolve, reject) => {
       // Update states
       callCount++;
       callingCount++;
@@ -74,18 +84,14 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(
       // Event handler for messages from the worker thread
       const handler = (event: MessageEvent) => {
         // Destructure the message from worker thread
-        const { key: receivedKey, ret } = event.data as {
-          key: number;
-          name: string;
-          ret: Awaited<ReturnType<FN>>;
-        };
+        const { ok, key: receivedKey, ret, err } = event
+          .data as WorkerThreadMessage<FN>;
         // Check if the message corresponds to the current call
         if (receivedKey !== key) {
           return;
         }
-        // Remove the event listener and resolve the promise with the return value
+        // Remove the message event listener
         _worker.removeEventListener("message", handler);
-        resolve(ret);
         // Update states
         callingCount--;
         // Set a TTL timeout for the worker instance
@@ -98,6 +104,16 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(
           workerTtlTimeoutId = ttl === 0
             ? (terminate(), undefined)
             : setTimeout(terminate, ttl);
+        }
+        // resolve the promise with the return value, or reject the promise with the err
+        if (ok) {
+          resolve(ret);
+        } else {
+          reject(
+            new Error(`The worker function "${name}" throws an exception.`, {
+              cause: err,
+            }),
+          );
         }
       };
 

@@ -64,16 +64,28 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(
       return;
     }
 
-    // Invoke the worker function with the provided arguments
-    const ret = await fn(...args);
-
-    // Post the return value back to the main thread
-    self.postMessage({
-      key,
-      name,
-      ret,
-    }, {
-      transfer: transfer && isTransferable(ret) ? [ret] : undefined,
-    });
+    try {
+      // Invoke the worker function with the provided arguments
+      const ret = await fn(...args);
+      // Post the return value back to the main thread
+      self.postMessage({
+        ok: true,
+        key,
+        name,
+        ret,
+        err: undefined,
+      }, {
+        transfer: transfer && isTransferable(ret) ? [ret] : undefined,
+      });
+    } catch (err) {
+      // Post the return value back to the main thread
+      self.postMessage({
+        ok: false,
+        key,
+        name,
+        ret: undefined,
+        err,
+      });
+    }
   });
 }
