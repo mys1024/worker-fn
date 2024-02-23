@@ -33,7 +33,7 @@ const { fn: sum } = useWorkerFn<Sum>({
   }),
 });
 
-console.log(await sum(1, 2));
+console.log(await sum(1, 2)); // 3
 ```
 
 ## License
