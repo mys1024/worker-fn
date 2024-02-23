@@ -1,7 +1,21 @@
 // deno-lint-ignore-file no-explicit-any
 
+/* -------------------------------------------------- types -------------------------------------------------- */
+
 // prevents TS errors
-declare const self: Worker & Record<string, any>;
+declare const self:
+  & Worker
+  & Record<string, any>;
+
+type AnyFn = (...args: any[]) => any;
+
+interface MainThreadMessage<FN extends AnyFn = AnyFn> {
+  key: number;
+  name: string;
+  args: Parameters<FN>;
+}
+
+/* -------------------------------------------------- transferable -------------------------------------------------- */
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects#supported_objects
@@ -28,6 +42,28 @@ function isTransferable(val: any): val is Transferable {
   return transferableClasses.some((c) => val instanceof c);
 }
 
+/* -------------------------------------------------- names -------------------------------------------------- */
+
+// Defined names
+const names = new Set<string>();
+
+// Check undefined names
+self.addEventListener("message", (event) => {
+  const { name, key } = event.data as MainThreadMessage;
+  if (names.has(name)) {
+    return;
+  }
+  self.postMessage({
+    ok: false,
+    key,
+    name,
+    ret: undefined,
+    err: new Error(`The name "${name}" is not defined.`),
+  });
+});
+
+/* -------------------------------------------------- defineWorkerFn -------------------------------------------------- */
+
 /**
  * Invoke this function in worker threads to define a worker function.
  *
@@ -35,7 +71,7 @@ function isTransferable(val: any): val is Transferable {
  * @param fn - The worker function.
  * @param options - An object containing options.
  */
-export function defineWorkerFn<FN extends (...args: any[]) => any>(
+export function defineWorkerFn<FN extends AnyFn>(
   name: string,
   fn: FN,
   options: {
@@ -51,13 +87,19 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(
   // Options
   const { transfer = true } = options;
 
-  // Listen for incoming messages from the main thread
+  // Define the name
+  if (names.has(name)) {
+    throw new Error(`The name "${name}" has already been defined.`);
+  } else {
+    names.add(name);
+  }
+
+  // Listen for messages from the main thread
   self.addEventListener("message", async (event) => {
-    const { key, name: receivedName, args } = (event as MessageEvent<{
-      key: number;
-      name: string;
-      args: Parameters<FN>;
-    }>).data;
+    // Destructure the message from main thread
+    const { key, name: receivedName, args } = event.data as MainThreadMessage<
+      FN
+    >;
 
     // Check if the received message is intended for this worker function
     if (receivedName !== name) {

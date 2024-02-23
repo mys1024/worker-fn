@@ -1,5 +1,19 @@
 // deno-lint-ignore-file no-explicit-any
 
+/* -------------------------------------------------- types -------------------------------------------------- */
+
+type AnyFn = (...args: any[]) => any;
+
+type WorkerThreadMessage<FN extends AnyFn = AnyFn> =
+  & {
+    key: number;
+    name: string;
+  }
+  & (
+    | { ok: true; ret: Awaited<ReturnType<FN>>; err: undefined }
+    | { ok: false; ret: undefined; err: any }
+  );
+
 interface LazyWorker {
   /**
    * A function that returns a new Worker instance.
@@ -13,15 +27,7 @@ interface LazyWorker {
   ttl?: number;
 }
 
-type WorkerThreadMessage<FN extends (...args: any[]) => any> =
-  & {
-    key: number;
-    name: string;
-  }
-  & (
-    | { ok: true; ret: Awaited<ReturnType<FN>>; err: undefined }
-    | { ok: false; ret: undefined; err: any }
-  );
+/* -------------------------------------------------- useWorkerFn -------------------------------------------------- */
 
 /**
  * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
@@ -31,7 +37,7 @@ type WorkerThreadMessage<FN extends (...args: any[]) => any> =
  * @param options - An object containing options.
  * @returns The proxy function.
  */
-export function useWorkerFn<FN extends (...args: any[]) => any>(
+export function useWorkerFn<FN extends AnyFn>(
   name: string,
   worker: Worker | LazyWorker,
   options: {
@@ -117,7 +123,7 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(
         }
       };
 
-      // Add the event listener for messages from the worker thread
+      // Listen for messages from the worker thread
       _worker.addEventListener("message", handler);
 
       // Post a message to the worker
