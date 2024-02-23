@@ -1,4 +1,4 @@
-import { defineWorkerFn } from "jsr:@mys1024/worker-fn@2";
+import { defineWorkerFn } from "../src/main.ts";
 
 function add(a: number, b: number) {
   return a + b;

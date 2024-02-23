@@ -1,4 +1,4 @@
-import { useWorkerFn } from "jsr:@mys1024/worker-fn@2";
+import { useWorkerFn } from "../src/main.ts";
 import type { Add, Fib } from "./math.worker.ts";
 
 const worker = new Worker(new URL("./math.worker.ts", import.meta.url), {
