@@ -1,39 +1,56 @@
 # worker-fn
 
-Creating and invoking mirrored **proxy functions** in the JavaScript main thread to execute the corresponding **actual functions** in the worker thread.
+`worker-fn` allows you to easily create **proxy functions** in the JavaScript main thread that call corresponding **worker functions** defined in [worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) threads. The proxy function has the same function signature as the worker function (except that the return value of the proxy function has to be wrapped in a Promise).
 
-This package is compatible with browsers and [Deno](https://deno.com/), but not with Node.js.
+NOTICE: `worker-fn` is compatible with runtimes that support the Web Workers API, such as browsers and [Deno](https://deno.com), but is not compatible with Node.js when using its built-in module `node:worker_threads`.
 
 ## Usage
 
-In `sum.worker.ts`:
+In `math.worker.ts`:
 
 ```typescript
-import { defineWorkerFn } from "jsr:@mys1024/worker-fn@1";
+import { defineWorkerFn } from "worker-fn";
 
-function sum(a: number, b: number) {
+function add(a: number, b: number) {
   return a + b;
 }
 
-defineWorkerFn({ name: "sum", fn: sum });
+function fib(n: number): number {
+  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
+}
 
-export type Sum = typeof sum;
+defineWorkerFn("add", add);
+defineWorkerFn("fib", fib);
+
+export type Add = typeof add;
+export type Fib = typeof fib;
 ```
 
-In `sum.ts`:
+In `math.ts`:
 
 ```typescript
-import { useWorkerFn } from "jsr:@mys1024/worker-fn@1";
-import type { Sum } from "./sum.worker.ts";
+import { useWorkerFn } from "worker-fn";
+import type { Add, Fib } from "./math.worker.ts";
 
-const { fn: sum } = useWorkerFn<Sum>({
-  name: "sum",
-  worker: new Worker(new URL("./sum.worker.ts", import.meta.url), {
-    type: "module",
-  }),
+const worker = new Worker(new URL("./math.worker.ts", import.meta.url), {
+  type: "module",
 });
 
-console.log(await sum(1, 2)); // 3
+export const add = useWorkerFn<Add>("add", worker);
+export const fib = useWorkerFn<Fib>("fib", worker);
+
+console.log(await add(1, 2)); // 3
+console.log(await fib(5)); // 5
+```
+
+## Importing from JSR
+
+`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys1024/worker-fn).
+
+If you are using Deno, you can import `worker-fn` from JSR:
+
+```typescript
+import { defineWorkerFn, useWorkerFn } from "jsr:@mys1024/worker-fn@2";
 ```
 
 ## License
