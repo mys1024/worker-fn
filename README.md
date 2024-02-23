@@ -1,8 +1,8 @@
 # worker-fn
 
-Run functions using Web Worker.
+Creating and invoking mirrored **proxy functions** in the JavaScript main thread to execute the corresponding **actual functions** in the worker thread.
 
-This package is currently compatible with browsers and Deno, but not with Node.js.
+This package is compatible with browsers and [Deno](https://deno.com/), but not with Node.js.
 
 ## Usage
 
