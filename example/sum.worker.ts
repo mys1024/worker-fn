@@ -1,8 +1,9 @@
 import { defineWorkerFn } from "jsr:@mys1024/worker-fn@1";
 
-export type Sum = (a: number, b: number) => number;
+function sum(a: number, b: number) {
+  return a + b;
+}
 
-defineWorkerFn<Sum>({
-  name: "sum",
-  fn: (a, b) => a + b,
-});
+defineWorkerFn({ name: "sum", fn: sum });
+
+export type Sum = typeof sum;
