@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { useWorkerFn } from "./main.ts";
+import { useWorkerFn } from "../src/main.ts";
 import type { Add, Fib, Redefine, ThrowErr } from "./main.test.worker.ts";
 import type { Add as Add2 } from "./main.test.worker.another.ts";
 

@@ -4,8 +4,8 @@
   "tasks": {
     "run": "deno run src/main.ts",
     "run:watch": "deno run --watch src/main.ts",
-    "cache": "deno cache --lock-write src/main.ts src/**/*.test.ts",
-    "cache:reload": "deno cache --reload src/main.ts src/**/*.test.ts",
+    "cache": "deno cache --lock-write src/main.ts test/**/*.test.ts",
+    "cache:reload": "deno cache --reload src/main.ts test/**/*.test.ts",
     "test": "deno test",
     "test:watch": "deno test --watch",
     "test:cover": "deno test --coverage",
