@@ -11,10 +11,6 @@ declare function postMessage(data: any, transfer?: Transferable[]): void
  * Call this function within the main thread to obtain a proxy function that executes the corresponding worker function defined within the worker thread.
  *
  * @param options - An object containing options for configuring the proxy function.
- * @param options.name - The name of the worker function.
- * @param options.worker - Either a Worker instance or an object with a factory method to create a Worker instance.
- * @param options.worker.factory - A function that returns a Worker instance.
- * @param options.worker.eager - Whether to eagerly load the worker or not. Default is false.
  * @returns An object containing the proxy function `fn`.
  */
 export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
@@ -106,9 +102,6 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
  * Call this function within a worker thread to define a worker function.
  *
  * @param options - An object containing options for defining the worker function.
- * @param options.name - The name of the worker function.
- * @param options.fn - The function to be executed within the worker thread.
- * @param options.transfer - Whether to transfer the return value or not. When the return value is of Transferable type, it will be transferred by default. See: https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
  */
 export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
   /**
@@ -161,7 +154,14 @@ export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
 
 /* -------------------------------------------------- utils -------------------------------------------------- */
 
-const _self = self as any
+let _self: any
+
+try {
+  _self = self
+}
+catch {
+  _self = {}
+}
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects#supported_objects
