@@ -1,6 +1,6 @@
 {
   "name": "@mys1024/worker-fn",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "tasks": {
     "run": "deno run src/main.ts",
     "run:watch": "deno run --watch src/main.ts",
