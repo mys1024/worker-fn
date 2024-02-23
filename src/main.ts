@@ -12,17 +12,12 @@ declare function postMessage(data: any, transfer?: Transferable[]): void;
 /**
  * Call this function within the main thread to obtain a proxy function that executes the corresponding worker function defined within the worker thread.
  *
- * @param options - An object containing options for configuring the proxy function.
- * @returns An object containing the proxy function `fn`.
+ * @param name - The name of the worker function.
+ * @param worker - Either a Worker instance or an object with a factory method to create a Worker instance.
+ * @returns The proxy function.
  */
-export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
-  /**
-   * The name of the worker function.
-   */
-  name: string;
-  /**
-   * Either a Worker instance or an object with a factory method to create a Worker instance.
-   */
+export function useWorkerFn<FN extends (...args: any[]) => any>(
+  name: string,
   worker: Worker | {
     /**
      * A function that returns a Worker instance.
@@ -32,20 +27,13 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
      * Whether to eagerly load the worker or not. Default is false.
      */
     eager?: boolean;
-  };
-}): {
-  /**
-   * The proxy function.
-   */
-  fn: (...args: Parameters<FN>) => Promise<Awaited<ReturnType<FN>>>;
-} {
-  const { name, worker: _worker } = options;
-
+  },
+): (...args: Parameters<FN>) => Promise<Awaited<ReturnType<FN>>> {
   // Check if a Worker instance is provided or if eager loading is requested
-  const eagerWorker = _worker instanceof Worker
-    ? _worker
-    : _worker.eager
-    ? _worker.factory()
+  const eagerWorker = worker instanceof Worker
+    ? worker
+    : worker.eager
+    ? worker.factory()
     : undefined;
 
   // Proxy function
@@ -58,7 +46,7 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
       const isLazy = !eagerWorker;
 
       // Get the worker instance
-      const worker = eagerWorker || (_worker as {
+      const _worker = eagerWorker || (worker as {
         factory: () => Worker;
       }).factory();
 
@@ -76,20 +64,20 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
         }
 
         // Remove the event listener and resolve the promise with the return value
-        worker.removeEventListener("message", handler);
+        _worker.removeEventListener("message", handler);
         resolve(ret);
 
         // Terminate the worker if it's a lazy instance (eager loading not requested)
         if (isLazy) {
-          worker.terminate();
+          _worker.terminate();
         }
       };
 
       // Add the event listener for messages from the worker thread
-      worker.addEventListener("message", handler);
+      _worker.addEventListener("message", handler);
 
       // Send a message to the worker with function name and arguments
-      worker.postMessage({
+      _worker.postMessage({
         key,
         name,
         args,
@@ -97,33 +85,29 @@ export function useWorkerFn<FN extends (...args: any[]) => any>(options: {
     });
   }
 
-  return {
-    fn,
-  };
+  return fn;
 }
 
 /**
  * Call this function within a worker thread to define a worker function.
  *
+ * @param name - A name that identifies the function to be executed in the worker thread.
+ * @param fn - The function to be executed within the worker thread.
  * @param options - An object containing options for defining the worker function.
  */
-export function defineWorkerFn<FN extends (...args: any[]) => any>(options: {
-  /**
-   * The name of the worker function.
-   */
-  name: string;
-  /**
-   * The function to be executed within the worker thread.
-   */
-  fn: FN;
-  /**
-   * Whether to transfer the return value or not. When the return value is of Transferable type, it will be transferred by default.
-   *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
-   */
-  transfer?: boolean;
-}): void {
-  const { name, fn, transfer: _transfer } = options;
+export function defineWorkerFn<FN extends (...args: any[]) => any>(
+  name: string,
+  fn: FN,
+  options: {
+    /**
+     * Whether to transfer the return value or not. Transfer when the return value is of type `ArrayBuffer` by default.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
+     */
+    transfer?: boolean;
+  } = {},
+): void {
+  const { transfer: _transfer } = options;
 
   // Listen for incoming messages from the main thread
   addEventListener("message", async (event) => {

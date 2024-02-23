@@ -4,6 +4,6 @@ function sum(a: number, b: number) {
   return a + b;
 }
 
-defineWorkerFn({ name: "sum", fn: sum });
+defineWorkerFn<Sum>("sum", sum);
 
 export type Sum = typeof sum;
