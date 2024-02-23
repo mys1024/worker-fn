@@ -1,9 +1,9 @@
 {
   "name": "worker-fn",
   "type": "module",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "packageManager": "pnpm@8.15.3",
-  "description": "Run functions using Web Worker.",
+  "description": "Creating and invoking mirrored proxy functions in the JavaScript main thread to execute the corresponding actual functions in the worker thread.",
   "author": "mys1024",
   "license": "MIT",
   "homepage": "https://github.com/mys1024/worker-fn#readme",
@@ -14,9 +14,12 @@
   "keywords": [
     "web",
     "worker",
-    "Web Worker",
+    "Web Workers",
     "function",
-    "browser"
+    "mirror",
+    "proxy",
+    "browser",
+    "Deno"
   ],
   "exports": {
     ".": {
