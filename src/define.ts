@@ -13,6 +13,11 @@ declare const self:
   }
   & Record<string, any>;
 
+interface WorkerFnConfig {
+  fn: AnyFn;
+  transfer: boolean;
+}
+
 /* -------------------------------------------------- transferable -------------------------------------------------- */
 
 /**
@@ -40,26 +45,49 @@ function isTransferable(val: any): val is Transferable {
   return transferableClasses.some((c) => val instanceof c);
 }
 
-/* -------------------------------------------------- names -------------------------------------------------- */
+/* -------------------------------------------------- defined functions -------------------------------------------------- */
 
-// Defined names
-const names = new Set<string>();
+const fns = new Map<string, WorkerFnConfig>();
 
-// Check undefined names
-self.addEventListener("message", (event) => {
-  const { name, key } = event.data as MainThreadMessage;
-  if (names.has(name)) {
+/* -------------------------------------------------- listen calls from main thread -------------------------------------------------- */
+
+self.addEventListener("message", async (event) => {
+  const { key, name, args } = event.data as MainThreadMessage;
+
+  // get the corresponding worker function
+  const { fn, transfer } = fns.get(name) || {};
+  if (!fn) {
+    self.postMessage({
+      ok: false,
+      key,
+      name,
+      err: new Error(`The name "${name}" is not defined.`),
+    });
     return;
   }
-  self.postMessage({
-    ok: false,
-    key,
-    name,
-    err: new Error(`The name "${name}" is not defined.`),
-  });
+
+  // invoke the worker function
+  try {
+    const ret = await fn(...args);
+    self.postMessage({
+      ok: true,
+      key,
+      name,
+      ret,
+    }, {
+      transfer: transfer && isTransferable(ret) ? [ret] : undefined,
+    });
+  } catch (err) {
+    self.postMessage({
+      ok: false,
+      key,
+      name,
+      err,
+    });
+  }
 });
 
-/* -------------------------------------------------- defineWorkerFn -------------------------------------------------- */
+/* -------------------------------------------------- defineWorkerFn() -------------------------------------------------- */
 
 /**
  * Invoke this function in worker threads to define a worker function.
@@ -81,46 +109,36 @@ export function defineWorkerFn<FN extends AnyFn>(
     transfer?: boolean;
   } = {},
 ): void {
-  // Options
   const { transfer = true } = options;
 
-  // Define the name
-  if (names.has(name)) {
+  if (fns.has(name)) {
     throw new Error(`The name "${name}" has already been defined.`);
   } else {
-    names.add(name);
+    fns.set(name, { fn, transfer });
   }
+}
 
-  // Listen for messages from the main thread
-  self.addEventListener("message", async (event) => {
-    // Destructure the message from main thread
-    const { key, name: receivedName, args } = event.data as MainThreadMessage<
-      FN
-    >;
+/* -------------------------------------------------- defineWorkerFns() -------------------------------------------------- */
 
-    // Check if the received message is intended for this worker function
-    if (receivedName !== name) {
-      return;
-    }
-
-    // Invoke the worker function with the provided arguments
-    try {
-      const ret = await fn(...args);
-      self.postMessage({
-        ok: true,
-        key,
-        name,
-        ret,
-      }, {
-        transfer: transfer && isTransferable(ret) ? [ret] : undefined,
-      });
-    } catch (err) {
-      self.postMessage({
-        ok: false,
-        key,
-        name,
-        err,
-      });
-    }
-  });
+/**
+ * Invoke this function in worker threads to define worker functions.
+ *
+ * @param functions - An object containing worker functions. Keys will be used as the name of the worker functions.
+ * @param options - An object containing options.
+ */
+export function defineWorkerFns(
+  functions: Record<string, AnyFn>,
+  options: {
+    /**
+     * Whether to transfer the return value of worker function if it is of type `Transferable`.
+     *
+     * @default true
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
+     */
+    transfer?: boolean;
+  } = {},
+): void {
+  for (const [name, fn] of Object.entries(functions)) {
+    defineWorkerFn(name, fn, options);
+  }
 }
