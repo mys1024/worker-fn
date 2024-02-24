@@ -19,5 +19,12 @@
   },
   "exports": {
     ".": "./src/main.ts"
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-explicit-any"
+      ]
+    }
   }
 }

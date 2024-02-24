@@ -1,18 +1,6 @@
-// deno-lint-ignore-file no-explicit-any
+import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
 
 /* -------------------------------------------------- types -------------------------------------------------- */
-
-type AnyFn = (...args: any[]) => any;
-
-type WorkerThreadMessage<FN extends AnyFn = AnyFn> =
-  & {
-    key: number;
-    name: string;
-  }
-  & (
-    | { ok: true; ret: Awaited<ReturnType<FN>>; err: undefined }
-    | { ok: false; ret: undefined; err: any }
-  );
 
 interface LazyWorker {
   /**
@@ -33,7 +21,7 @@ interface LazyWorker {
  * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
  *
  * @param name - The name that identifies the worker function.
- * @param worker -
+ * @param worker - Either a Worker instance or an object containing options for creating a lazy Worker instance.
  * @param options - An object containing options.
  * @returns The proxy function.
  */
@@ -42,7 +30,7 @@ export function useWorkerFn<FN extends AnyFn>(
   worker: Worker | LazyWorker,
   options: {
     /**
-     * A function that determines the object to be transferred when posting messages to worker threads.
+     * A function that determines objects to be transferred when posting messages to the worker thread.
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
      * @param ctx The context of proxy function invocation.
@@ -78,7 +66,7 @@ export function useWorkerFn<FN extends AnyFn>(
       const key = callCount;
 
       // Get the worker instance
-      const _worker = workerInst = workerInst
+      const workerInstCurr = workerInst = workerInst
         ? workerInst
         : worker instanceof Worker
         ? worker
@@ -97,7 +85,7 @@ export function useWorkerFn<FN extends AnyFn>(
           return;
         }
         // Remove the message event listener
-        _worker.removeEventListener("message", handler);
+        workerInstCurr.removeEventListener("message", handler);
         // Update states
         callingCount--;
         // Set a TTL timeout for the worker instance
@@ -124,14 +112,15 @@ export function useWorkerFn<FN extends AnyFn>(
       };
 
       // Listen for messages from the worker thread
-      _worker.addEventListener("message", handler);
+      workerInstCurr.addEventListener("message", handler);
 
       // Post a message to the worker
-      _worker.postMessage({
+      const message: MainThreadMessage<FN> = {
         key,
         name,
         args,
-      }, {
+      };
+      workerInstCurr.postMessage(message, {
         transfer: transfer?.({ args }),
       });
     });

@@ -1,19 +1,17 @@
-// deno-lint-ignore-file no-explicit-any
+import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
 
 /* -------------------------------------------------- types -------------------------------------------------- */
 
 // prevents TS errors
 declare const self:
-  & Worker
+  & {
+    addEventListener: Worker["addEventListener"];
+    postMessage: (
+      message: WorkerThreadMessage,
+      options?: StructuredSerializeOptions | undefined,
+    ) => void;
+  }
   & Record<string, any>;
-
-type AnyFn = (...args: any[]) => any;
-
-interface MainThreadMessage<FN extends AnyFn = AnyFn> {
-  key: number;
-  name: string;
-  args: Parameters<FN>;
-}
 
 /* -------------------------------------------------- transferable -------------------------------------------------- */
 
@@ -57,7 +55,6 @@ self.addEventListener("message", (event) => {
     ok: false,
     key,
     name,
-    ret: undefined,
     err: new Error(`The name "${name}" is not defined.`),
   });
 });
@@ -106,26 +103,22 @@ export function defineWorkerFn<FN extends AnyFn>(
       return;
     }
 
+    // Invoke the worker function with the provided arguments
     try {
-      // Invoke the worker function with the provided arguments
       const ret = await fn(...args);
-      // Post the return value back to the main thread
       self.postMessage({
         ok: true,
         key,
         name,
         ret,
-        err: undefined,
       }, {
         transfer: transfer && isTransferable(ret) ? [ret] : undefined,
       });
     } catch (err) {
-      // Post the return value back to the main thread
       self.postMessage({
         ok: false,
         key,
         name,
-        ret: undefined,
         err,
       });
     }
