@@ -2,6 +2,13 @@ import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
 
 /* -------------------------------------------------- types -------------------------------------------------- */
 
+// prevents tsup errors
+declare function setTimeout(
+  cb: (...args: any[]) => void,
+  delay?: number | undefined,
+  ...args: any[]
+): number;
+
 interface LazyWorker {
   /**
    * A function that returns a new Worker instance.

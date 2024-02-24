@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - jsr
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Test
+        run: deno task test
+
+      - name: Publish to JSR
+        run: deno publish
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          deno run -A npm/version.ts
+          mv npm/package.json package.json
+          mv npm/tsconfig.json tsconfig.json
+          npx tsup src/main.ts --clean --dts --format esm
+          npm publish
