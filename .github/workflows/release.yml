@@ -10,14 +10,17 @@ permissions:
 
 jobs:
   test:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    runs-on: ubuntu-latest
 
-    - name: Setup Deno
-      uses: denoland/setup-deno@v1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Test
-      run: deno task test
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Test
+        run: deno task test
 
   publish-to-jsr:
     needs: test
