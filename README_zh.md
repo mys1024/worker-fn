@@ -1,6 +1,6 @@
 # worker-fn
 
-[![NPM License](https://img.shields.io/npm/l/worker-fn)](./LICENSE)
+[![GitHub License](https://img.shields.io/github/license/mys1024/worker-fn)](./LICENSE)
 [![JSR version](https://img.shields.io/github/v/tag/mys1024/worker-fn?label=JSR&color=rgb(247%2C%20223%2C%2030))](https://jsr.io/@mys1024/worker-fn)
 [![NPM Version](https://img.shields.io/npm/v/worker-fn)](https://www.npmjs.com/package/worker-fn)
 [![NPM Downloads](https://img.shields.io/npm/dm/worker-fn)](https://www.npmjs.com/package/worker-fn)
