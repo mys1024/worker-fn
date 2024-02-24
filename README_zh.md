@@ -1,11 +1,11 @@
 # worker-fn
 
-[![GitHub License](https://img.shields.io/github/license/mys1024/worker-fn)](./LICENSE)
-[![JSR version](https://img.shields.io/github/v/tag/mys1024/worker-fn?label=JSR&color=rgb(247%2C%20223%2C%2030))](https://jsr.io/@mys1024/worker-fn)
-[![NPM Version](https://img.shields.io/npm/v/worker-fn)](https://www.npmjs.com/package/worker-fn)
-[![NPM Downloads](https://img.shields.io/npm/dm/worker-fn)](https://www.npmjs.com/package/worker-fn)
-[![GitHub Actions Workflow CI Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/.github%2Fworkflows%2Fci.yml?label=CI)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
-[![GitHub Actions Workflow Release Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/.github%2Fworkflows%2Frelease.yml?label=Release)](https://github.com/mys1024/worker-fn/actions/workflows/release.yml)
+[![GitHub License](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)
+[![GitHub Tag](https://img.shields.io/github/v/tag/mys1024/worker-fn?sort=semver&style=flat-square&label=JSR&color=rgb(247%2C223%2C30))](https://jsr.io/@mys1024/worker-fn)
+[![NPM Version](https://img.shields.io/npm/v/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
+[![NPM Downloads](https://img.shields.io/npm/dy/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
+[![GitHub Actions Workflow CI Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/ci.yml?label=CI&&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
+[![GitHub Actions Workflow Release Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/release.yml?label=Release&&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/release.yml)
 
 [English](./README.md) | 中文文档
 
