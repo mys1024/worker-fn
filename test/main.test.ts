@@ -16,16 +16,21 @@ Deno.test("basic", async () => {
   assertEquals(await fib(5), 5);
 });
 
-Deno.test("lazy worker", async () => {
-  const add = useWorkerFn<Add>("add", {
-    factory: () =>
-      new Worker(new URL("./main.test.worker.ts", import.meta.url), {
-        type: "module",
-      }),
-  });
-  assertEquals(await add(1, 2), 3);
-  assertEquals(await add(5, 5), 10);
-  assertEquals(await add(10, 20), 30);
+Deno.test({
+  name: "lazy worker",
+  sanitizeOps: false,
+  fn: async () => {
+    const add = useWorkerFn<Add>("add", {
+      factory: () =>
+        new Worker(new URL("./main.test.worker.ts", import.meta.url), {
+          type: "module",
+        }),
+      ttl: 1000,
+    });
+    assertEquals(await add(1, 2), 3);
+    assertEquals(await add(5, 5), 10);
+    assertEquals(await add(10, 20), 30);
+  },
 });
 
 Deno.test("err passthrough", async () => {
