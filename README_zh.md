@@ -7,17 +7,17 @@
 [![GitHub Actions Workflow CI Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/.github%2Fworkflows%2Fci.yml?label=CI)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Release Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/.github%2Fworkflows%2Frelease.yml?label=Release)](https://github.com/mys1024/worker-fn/actions/workflows/release.yml)
 
-English | [中文文档](./README_zh.md)
+[English](./README.md) | 中文文档
 
-`worker-fn` hides the complexity of communication between the main thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) threads, making it easy to call functions defined in the Worker.
+`worker-fn` 隐藏了主线程与 [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 线程之间通信的复杂性，简化了调用定义在 Worker 中的函数。
 
-`worker-fn` allows you to create **proxy functions** in the JavaScript main thread that call corresponding **worker functions** defined in Worker threads. The proxy function has the same function signature as the worker function (except that the return value of the proxy function has to be wrapped in a Promise).
+你可以通过 `worker-fn` 在 JavaScript 主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值需要包裹在 Promise 中），代理函数会调用定义在 Worker 线程中对应的工作函数。
 
-NOTICE: `worker-fn` is compatible with runtimes that support the [Web Workers API](https://developer.mozilla.org/docs/Web/API/Web_Workers_API), such as browsers and [Deno](https://deno.com), but is not compatible with `node:worker_threads` in Node.js.
+注意：`worker-fn` 兼容支持 [Web Workers API](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 的运行时，例如浏览器和 [Deno](https://deno.com)，但不兼容 Node.js 内置的 Worker 模块 `node:worker_threads`。
 
-## Usage
+## 用法
 
-In `math.worker.ts`:
+`math.worker.ts`:
 
 ```typescript
 import { defineWorkerFn } from "worker-fn";
@@ -37,7 +37,7 @@ export type Add = typeof add;
 export type Fib = typeof fib;
 ```
 
-In `math.ts`:
+`math.ts`:
 
 ```typescript
 import { useWorkerFn } from "worker-fn";
@@ -54,11 +54,11 @@ console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5
 ```
 
-## Importing from JSR
+## 从 JSR 导入
 
-`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys1024/worker-fn).
+`worker-fn` 同时发布在 [npm](https://www.npmjs.com/package/worker-fn) 和 [JSR](https://jsr.io/@mys1024/worker-fn) 上。
 
-If you are using Deno, you can import `worker-fn` from JSR:
+如果你使用 [Deno](https://deno.com), 你可以从 JSR 导入 `worker-fn`:
 
 ```typescript
 import { defineWorkerFn, useWorkerFn } from "jsr:@mys1024/worker-fn@2";

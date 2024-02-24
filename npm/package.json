@@ -1,7 +1,7 @@
 {
   "name": "worker-fn",
   "version": "",
-  "description": "worker-fn allows you to easily create proxy functions in the JavaScript main thread that call corresponding worker functions defined in worker threads. The proxy function has the same function signature as the worker function.",
+  "description": "worker-fn hides the complexity of communication between the main thread and Worker threads, making it easy to call functions defined in the Worker.",
   "type": "module",
   "author": "mys1024",
   "packageManager": "pnpm@8.6.1",
