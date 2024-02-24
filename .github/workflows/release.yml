@@ -5,10 +5,23 @@ on:
     branches:
       - jsr
 
-jobs:
-  release:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write
 
+jobs:
+  test:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Deno
+      uses: denoland/setup-deno@v1
+
+    - name: Test
+      run: deno task test
+
+  publish-to-jsr:
+    needs: test
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
@@ -26,12 +39,52 @@ jobs:
       - name: Publish to JSR
         run: deno publish
 
-      - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  publish-to-npm:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare files
         run: |
           deno run -A npm/version.ts
           mv npm/package.json package.json
+          mv npm/pnpm-lock.yaml pnpm-lock.yaml
           mv npm/tsconfig.json tsconfig.json
-          npx tsup src/main.ts --clean --dts --format esm
-          npm publish
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+      - name: Install
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  changelog
+    needs:
+      - publish-to-jsr
+      - publish-to-npm
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+      - name: Changelog
+        run: npx changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

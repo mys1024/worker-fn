@@ -4,6 +4,7 @@
   "description": "worker-fn allows you to easily create proxy functions in the JavaScript main thread that call corresponding worker functions defined in worker threads. The proxy function has the same function signature as the worker function.",
   "type": "module",
   "author": "mys1024",
+  "packageManager": "pnpm@8.6.1",
   "license": "MIT",
   "homepage": "https://github.com/mys1024/worker-fn#readme",
   "repository": {
@@ -23,6 +24,9 @@
   "files": [
     "dist"
   ],
+  "scripts": {
+    "build": "npx tsup src/main.ts --clean --dts --format esm"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -32,5 +36,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     }
+  },
+  "dependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
   }
 }
