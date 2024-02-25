@@ -11,13 +11,13 @@ English | [中文文档](./README_zh.md)
 
 `worker-fn` hides the complexity of communication between the main thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) threads, making it easy to call functions defined in the Worker.
 
-`worker-fn` allows you to create **proxy functions** in the JavaScript main thread that call corresponding **worker functions** defined in Worker threads. The proxy function has the same function signature as the worker function (except that the return value of the proxy function has to be wrapped in a Promise).
+`worker-fn` allows you to create **proxy functions** in the JavaScript main thread that call corresponding **worker functions** defined in Worker threads. The proxy function has the same function signature as the worker function (except that the return value of the proxy function will be wrapped in a Promise).
 
 ![Concept](./docs/concept.png)
 
 ## Compatibility
 
-`worker-fn` is compatible with runtimes that support the [Web Workers API](https://developer.mozilla.org/docs/Web/API/Web_Workers_API), such as browsers and [Deno](https://deno.com), but is not compatible with `node:worker_threads` in Node.js.
+`worker-fn` is compatible with runtimes that support the [Web Workers API](https://developer.mozilla.org/docs/Web/API/Web_Workers_API), such as browsers and [Deno](https://deno.com), but currently is not compatible with `node:worker_threads` in Node.js.
 
 ## Usage
 
