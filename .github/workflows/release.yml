@@ -43,7 +43,7 @@ jobs:
         run: deno publish
 
   publish-to-npm:
-    needs: test
+    needs: publish-to-jsr
     runs-on: ubuntu-latest
 
     steps:
@@ -81,9 +81,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   changelog:
-    needs:
-      - publish-to-jsr
-      - publish-to-npm
+    needs: publish-to-jsr
     runs-on: ubuntu-latest
 
     steps:
