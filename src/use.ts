@@ -94,10 +94,10 @@ export function use<FN extends AnyFn>(
       // Event handler for messages from the worker thread
       const handler = (event: MessageEvent) => {
         // Destructure the message from worker thread
-        const { ok, key: receivedKey, ret, err } = event
+        const { meta, ok, ret, err } = event
           .data as WorkerThreadMessage<FN>;
         // Check if the message corresponds to the current call
-        if (receivedKey !== key) {
+        if (meta.key !== key) {
           return;
         }
         // Remove the message event listener
@@ -131,15 +131,19 @@ export function use<FN extends AnyFn>(
       workerInstCurr.addEventListener("message", handler);
 
       // Post a message to the worker
-      const message: MainThreadMessage<FN> = {
-        internal,
-        key,
-        name,
-        args,
-      };
-      workerInstCurr.postMessage(message, {
-        transfer: transfer?.({ args }),
-      });
+      workerInstCurr.postMessage(
+        {
+          meta: {
+            internal,
+            name,
+            key,
+          },
+          args,
+        } satisfies MainThreadMessage<FN>,
+        {
+          transfer: transfer?.({ args }),
+        },
+      );
     });
   }
 

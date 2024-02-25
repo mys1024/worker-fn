@@ -137,17 +137,16 @@ export type InternalFns = {
 /* -------------------------------------------------- listen calls from main thread -------------------------------------------------- */
 
 self.addEventListener("message", async (event) => {
-  const { internal, key, name, args } = event.data as MainThreadMessage;
+  const { meta, args } = event.data as MainThreadMessage;
+  const { internal, name } = meta;
 
   // get the corresponding worker function
   const _fns = internal ? internalFns : fns;
   const { fn, transfer } = _fns.get(name) || {};
   if (!fn) {
     self.postMessage({
-      internal,
+      meta,
       ok: false,
-      key,
-      name,
       err: new Error(`The name "${name}" is not defined.`),
     });
     return;
@@ -157,20 +156,16 @@ self.addEventListener("message", async (event) => {
   try {
     const ret = await fn(...args);
     self.postMessage({
-      internal,
+      meta,
       ok: true,
-      key,
-      name,
       ret,
     }, {
       transfer: transfer && isTransferable(ret) ? [ret] : undefined,
     });
   } catch (err) {
     self.postMessage({
-      internal,
+      meta,
       ok: false,
-      key,
-      name,
       err,
     });
   }
