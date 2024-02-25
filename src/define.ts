@@ -1,6 +1,6 @@
 import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
 
-/* -------------------------------------------------- types -------------------------------------------------- */
+/* -------------------------------------------------- common -------------------------------------------------- */
 
 // prevents TS errors
 declare const self:
@@ -12,11 +12,6 @@ declare const self:
     ) => void;
   }
   & Record<string, any>;
-
-interface WorkerFnConfig {
-  fn: AnyFn;
-  transfer: boolean;
-}
 
 /* -------------------------------------------------- transferable -------------------------------------------------- */
 
@@ -47,17 +42,109 @@ function isTransferable(val: any): val is Transferable {
 
 /* -------------------------------------------------- defined functions -------------------------------------------------- */
 
+interface WorkerFnConfig {
+  fn: AnyFn;
+  transfer: boolean;
+}
+
 const fns = new Map<string, WorkerFnConfig>();
+const internalFns = new Map<string, WorkerFnConfig>();
+
+/* -------------------------------------------------- defineWorkerFn(s) -------------------------------------------------- */
+
+interface DefineWorkerFnOpts {
+  /**
+   * Whether to transfer the return value of worker function if it is of type `Transferable`.
+   *
+   * @default true
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
+   */
+  transfer?: boolean;
+}
+
+/**
+ * The normalized function to define a worker function.
+ */
+function define<FN extends AnyFn>(
+  name: string,
+  fn: FN,
+  options: DefineWorkerFnOpts & {
+    internal?: boolean;
+  } = {},
+): void {
+  const { transfer = true, internal = false } = options;
+
+  const _fns = internal ? internalFns : fns;
+
+  if (_fns.has(name)) {
+    throw new Error(`The name "${name}" has already been defined.`);
+  } else {
+    _fns.set(name, { fn, transfer });
+  }
+}
+
+/**
+ * Invoke this function in worker threads to define a worker function.
+ *
+ * @param name - A name that identifies the worker function.
+ * @param fn - The worker function.
+ * @param options - An object containing options.
+ */
+export function defineWorkerFn<FN extends AnyFn>(
+  name: string,
+  fn: FN,
+  options: DefineWorkerFnOpts = {},
+): void {
+  define(name, fn, {
+    ...options,
+    internal: false, // ensure not internal
+  });
+}
+
+/**
+ * Invoke this function in worker threads to define worker functions.
+ *
+ * @param functions - An object containing worker functions. Keys will be used as the name of the worker functions.
+ * @param options - An object containing options.
+ */
+export function defineWorkerFns(
+  functions: Record<string, AnyFn>,
+  options: DefineWorkerFnOpts = {},
+): void {
+  for (const [name, fn] of Object.entries(functions)) {
+    define(name, fn, {
+      ...options,
+      internal: false, // ensure not internal
+    });
+  }
+}
+
+/* -------------------------------------------------- internal functions -------------------------------------------------- */
+
+/**
+ * @returns Names of defined worker function
+ */
+function $names() {
+  return Array.from(fns.keys());
+}
+
+define("$names", $names, { internal: true });
+
+export type InternalFns = {
+  $names: typeof $names;
+};
 
 /* -------------------------------------------------- listen calls from main thread -------------------------------------------------- */
 
 self.addEventListener("message", async (event) => {
-  const { key, name, args } = event.data as MainThreadMessage;
+  const { internal, key, name, args } = event.data as MainThreadMessage;
 
   // get the corresponding worker function
-  const { fn, transfer } = fns.get(name) || {};
+  const _fns = internal ? internalFns : fns;
+  const { fn, transfer } = _fns.get(name) || {};
   if (!fn) {
     self.postMessage({
+      internal,
       ok: false,
       key,
       name,
@@ -70,6 +157,7 @@ self.addEventListener("message", async (event) => {
   try {
     const ret = await fn(...args);
     self.postMessage({
+      internal,
       ok: true,
       key,
       name,
@@ -79,6 +167,7 @@ self.addEventListener("message", async (event) => {
     });
   } catch (err) {
     self.postMessage({
+      internal,
       ok: false,
       key,
       name,
@@ -86,59 +175,3 @@ self.addEventListener("message", async (event) => {
     });
   }
 });
-
-/* -------------------------------------------------- defineWorkerFn() -------------------------------------------------- */
-
-/**
- * Invoke this function in worker threads to define a worker function.
- *
- * @param name - A name that identifies the worker function.
- * @param fn - The worker function.
- * @param options - An object containing options.
- */
-export function defineWorkerFn<FN extends AnyFn>(
-  name: string,
-  fn: FN,
-  options: {
-    /**
-     * Whether to transfer the return value of worker function if it is of type `Transferable`.
-     *
-     * @default true
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
-     */
-    transfer?: boolean;
-  } = {},
-): void {
-  const { transfer = true } = options;
-
-  if (fns.has(name)) {
-    throw new Error(`The name "${name}" has already been defined.`);
-  } else {
-    fns.set(name, { fn, transfer });
-  }
-}
-
-/* -------------------------------------------------- defineWorkerFns() -------------------------------------------------- */
-
-/**
- * Invoke this function in worker threads to define worker functions.
- *
- * @param functions - An object containing worker functions. Keys will be used as the name of the worker functions.
- * @param options - An object containing options.
- */
-export function defineWorkerFns(
-  functions: Record<string, AnyFn>,
-  options: {
-    /**
-     * Whether to transfer the return value of worker function if it is of type `Transferable`.
-     *
-     * @default true
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
-     */
-    transfer?: boolean;
-  } = {},
-): void {
-  for (const [name, fn] of Object.entries(functions)) {
-    defineWorkerFn(name, fn, options);
-  }
-}

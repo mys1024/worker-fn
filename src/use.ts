@@ -1,6 +1,6 @@
 import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
 
-/* -------------------------------------------------- types -------------------------------------------------- */
+/* -------------------------------------------------- common -------------------------------------------------- */
 
 // prevents tsup errors
 declare function setTimeout(
@@ -8,6 +8,8 @@ declare function setTimeout(
   delay?: number | undefined,
   ...args: any[]
 ): number;
+
+/* -------------------------------------------------- useWorkerFn(s) -------------------------------------------------- */
 
 interface LazyWorker {
   /**
@@ -22,32 +24,39 @@ interface LazyWorker {
   ttl?: number;
 }
 
-/* -------------------------------------------------- useWorkerFn -------------------------------------------------- */
+interface UseWorkerFnOpts<FN extends AnyFn> {
+  /**
+   * A function that determines objects to be transferred when posting messages to the worker thread.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
+   * @param ctx The context of proxy function invocation.
+   * @returns Transferable objects.
+   */
+  transfer?: (ctx: { args: Parameters<FN> }) => Transferable[];
+}
+
+type AwaitedRet<FN extends AnyFn> = Awaited<ReturnType<FN>>;
+
+type ProxyFn<FN extends AnyFn> = (
+  ...args: Parameters<FN>
+) => Promise<AwaitedRet<FN>>;
+
+type ProxyFns<FNS extends Record<string, AnyFn>> = {
+  [P in keyof FNS]: ProxyFn<FNS[P]>;
+};
 
 /**
- * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
- *
- * @param name - The name that identifies the worker function.
- * @param worker - Either a Worker instance or an object containing options for creating a lazy Worker instance.
- * @param options - An object containing options.
- * @returns The proxy function.
+ * The normalized function to define a proxy function.
  */
-export function useWorkerFn<FN extends AnyFn>(
+export function use<FN extends AnyFn>(
   name: string,
   worker: Worker | LazyWorker,
-  options: {
-    /**
-     * A function that determines objects to be transferred when posting messages to the worker thread.
-     *
-     * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
-     * @param ctx The context of proxy function invocation.
-     * @returns Transferable objects.
-     */
-    transfer?: (ctx: { args: Parameters<FN> }) => Transferable[];
-  } = {},
-): (...args: Parameters<FN>) => Promise<Awaited<ReturnType<FN>>> {
+  options: UseWorkerFnOpts<FN> & {
+    internal: boolean;
+  },
+) {
   // Options
-  const { transfer } = options;
+  const { transfer, internal } = options;
 
   // States
   let callCount = 0;
@@ -64,7 +73,7 @@ export function useWorkerFn<FN extends AnyFn>(
 
   // Proxy function
   function fn(...args: Parameters<FN>) {
-    return new Promise<Awaited<ReturnType<FN>>>((resolve, reject) => {
+    return new Promise<AwaitedRet<FN>>((resolve, reject) => {
       // Update states
       callCount++;
       callingCount++;
@@ -123,6 +132,7 @@ export function useWorkerFn<FN extends AnyFn>(
 
       // Post a message to the worker
       const message: MainThreadMessage<FN> = {
+        internal,
         key,
         name,
         args,
@@ -134,5 +144,47 @@ export function useWorkerFn<FN extends AnyFn>(
   }
 
   // Return the proxy function
+  return { fn };
+}
+
+/**
+ * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
+ *
+ * @param name - The name that identifies the worker function.
+ * @param worker - Either a Worker instance or an object containing options for creating a lazy Worker instance.
+ * @param options - An object containing options.
+ * @returns The proxy function.
+ */
+export function useWorkerFn<FN extends AnyFn>(
+  name: string,
+  worker: Worker | LazyWorker,
+  options: UseWorkerFnOpts<FN> = {},
+): ProxyFn<FN> {
+  const { fn } = use(name, worker, {
+    ...options,
+    internal: false, // ensure not internal
+  });
   return fn;
+}
+
+/**
+ * Invoke this function in the main thread to create proxy functions of all worker functions.
+ *
+ * @param worker - Either a Worker instance or an object containing options for creating a lazy Worker instance.
+ * @returns Proxy functions.
+ */
+export function useWorkerFns<FNS extends Record<string, AnyFn>>(
+  worker: Worker | LazyWorker,
+) {
+  const fns = new Proxy({}, {
+    get(_target, name) {
+      if (typeof name !== "string") {
+        throw new Error("The name must be a string.", { cause: name });
+      }
+      const { fn } = use(name, worker, { internal: false });
+      return fn;
+    },
+  });
+
+  return fns as ProxyFns<FNS>;
 }

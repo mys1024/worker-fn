@@ -1,6 +1,7 @@
 export type AnyFn = (...args: any[]) => any;
 
 export type MainThreadMessage<FN extends AnyFn = AnyFn> = {
+  internal: boolean;
   key: number;
   name: string;
   args: Parameters<FN>;
@@ -8,6 +9,7 @@ export type MainThreadMessage<FN extends AnyFn = AnyFn> = {
 
 export type WorkerThreadMessage<FN extends AnyFn = AnyFn> =
   & {
+    internal: boolean;
     key: number;
     name: string;
   }
