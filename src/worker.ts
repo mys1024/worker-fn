@@ -65,7 +65,7 @@ interface DefineWorkerFnOpts {
 /**
  * The normalized function to define a worker function.
  */
-function define<FN extends AnyFn>(
+export function define<FN extends AnyFn>(
   name: string,
   fn: FN,
   options: DefineWorkerFnOpts & {

@@ -1,4 +1,5 @@
 import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
+import type { InternalFns } from "./worker.ts";
 
 /* -------------------------------------------------- common -------------------------------------------------- */
 
@@ -191,4 +192,22 @@ export function useWorkerFns<FNS extends Record<string, AnyFn>>(
   });
 
   return fns as ProxyFns<FNS>;
+}
+
+/* -------------------------------------------------- inspectWorker -------------------------------------------------- */
+
+/**
+ * Inspect a worker.
+ *
+ * @param worker The worker.
+ * @returns Information about the worker.
+ */
+export async function inspectWorker(worker: Worker) {
+  const { fn: $names } = use<InternalFns["$names"]>("$names", worker, {
+    internal: true,
+  });
+
+  return {
+    names: await $names(),
+  };
 }
