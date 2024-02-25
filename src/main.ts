@@ -1,2 +1,2 @@
-export { defineWorkerFn, defineWorkerFns } from "./define.ts";
-export { useWorkerFn, useWorkerFns } from "./use.ts";
+export { defineWorkerFn, defineWorkerFns } from "./worker.ts";
+export { useWorkerFn, useWorkerFns } from "./proxy.ts";
