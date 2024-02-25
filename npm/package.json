@@ -25,6 +25,7 @@
     "dist"
   ],
   "scripts": {
+    "version": "node scripts/version.js",
     "build": "npx tsup src/main.ts --clean --dts --format esm"
   },
   "main": "./dist/index.js",
