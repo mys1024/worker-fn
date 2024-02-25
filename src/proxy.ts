@@ -180,7 +180,7 @@ export function useWorkerFn<FN extends AnyFn>(
  */
 export function useWorkerFns<FNS extends Record<string, AnyFn>>(
   worker: Worker | LazyWorker,
-) {
+): ProxyFns<FNS> {
   const fns = new Proxy({}, {
     get(_target, name) {
       if (typeof name !== "string") {
@@ -202,7 +202,9 @@ export function useWorkerFns<FNS extends Record<string, AnyFn>>(
  * @param worker The worker.
  * @returns Information about the worker.
  */
-export async function inspectWorker(worker: Worker) {
+export async function inspectWorker(worker: Worker): Promise<{
+  names: string[];
+}> {
   const { fn: $names } = use<InternalFns["$names"]>("$names", worker, {
     internal: true,
   });
