@@ -2,7 +2,7 @@
 
 [![GitHub License](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)
 [![GitHub Tag](https://img.shields.io/github/v/tag/mys1024/worker-fn?sort=semver&style=flat-square&label=JSR&color=rgb(247%2C223%2C30))](https://jsr.io/@mys1024/worker-fn)
-[![NPM Version](https://img.shields.io/npm/v/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
+[![NPM Version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=rgb(203%2C56%2C55))](https://www.npmjs.com/package/worker-fn)
 [![NPM Downloads](https://img.shields.io/npm/dy/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
 [![GitHub Actions Workflow CI Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/ci.yml?label=CI&&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Release Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/release.yml?label=Release&&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/release.yml)
@@ -13,7 +13,11 @@
 
 你可以通过 `worker-fn` 在 JavaScript 主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值需要包裹在 Promise 中），代理函数会调用定义在 Worker 线程中对应的工作函数。
 
-注意：`worker-fn` 兼容支持 [Web Workers API](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 的运行时，例如浏览器和 [Deno](https://deno.com)，但不兼容 Node.js 内置的 Worker 模块 `node:worker_threads`。
+![Concept](./docs/concept.svg)
+
+## 兼容性
+
+`worker-fn` 兼容支持 [Web Workers API](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 的运行时，例如浏览器和 [Deno](https://deno.com)，但不兼容 Node.js 内置的 Worker 模块 `node:worker_threads`。
 
 ## 用法
 
