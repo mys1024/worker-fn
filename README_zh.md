@@ -13,7 +13,7 @@
 
 你可以通过 `worker-fn` 在 JavaScript 主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值需要包裹在 Promise 中），代理函数会调用定义在 Worker 线程中对应的工作函数。
 
-![Concept](./docs/concept.svg)
+![Concept](./docs/concept.png)
 
 ## 兼容性
 
