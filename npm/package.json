@@ -37,7 +37,7 @@
       "require": "./dist/index.js"
     }
   },
-  "dependencies": {
+  "devDependencies": {
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   }
