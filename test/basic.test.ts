@@ -54,6 +54,29 @@ Deno.test({
         );
       });
 
+      await t.step("multiple proxy functions", async () => {
+        const worker = new Worker(
+          new URL("./basic.test.worker.ts", import.meta.url),
+          {
+            type: "module",
+          },
+        );
+
+        const add1 = useWorkerFn<Add>("add", worker);
+        const add2 = useWorkerFn<Add>("add", worker);
+        const add3 = useWorkerFn<Add>("add", worker);
+        const results = Promise.all([add1(100, 200), add2(50, 50), add3(2, 8)]);
+        const timeout = new Promise((_, reject) => {
+          setTimeout(() => {
+            reject("timeout!");
+          }, 500);
+        });
+        assertEquals(
+          await Promise.race([results, timeout]),
+          [300, 100, 10],
+        );
+      });
+
       await t.step("err passthrough", async () => {
         const throwErr = useWorkerFn<ThrowErr>(
           "throwErr",
@@ -105,7 +128,7 @@ Deno.test({
         }
       });
 
-      await t.step("isolation", async () => {
+      await t.step("multiple workers", async () => {
         const worker1 = new Worker(
           new URL("./basic.test.worker.ts", import.meta.url),
           {

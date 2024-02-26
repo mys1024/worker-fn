@@ -194,7 +194,7 @@ export function use<FN extends AnyFn>(
       callCount++;
       callingCount++;
       // identify the current call
-      const key = callCount;
+      const key = Math.random();
       // stop the TTL timeout for the worker instance
       clearTimeout(workerTtlTimeoutId);
       // get the worker instance
