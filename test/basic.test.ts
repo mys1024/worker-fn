@@ -40,6 +40,20 @@ Deno.test({
         },
       });
 
+      await t.step("concurrency", async () => {
+        const worker = new Worker(
+          new URL("./basic.test.worker.ts", import.meta.url),
+          {
+            type: "module",
+          },
+        );
+        const add = useWorkerFn<Add>("add", worker);
+        assertEquals(
+          await Promise.all([add(100, 200), add(50, 50), add(2, 8)]),
+          [300, 100, 10],
+        );
+      });
+
       await t.step("err passthrough", async () => {
         const throwErr = useWorkerFn<ThrowErr>(
           "throwErr",
