@@ -1,4 +1,5 @@
-import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
+import type { AnyFn, WorkerThreadMessage } from "./types.ts";
+import { isMainThreadMessage } from "./utils.ts";
 
 /* -------------------------------------------------- common -------------------------------------------------- */
 
@@ -137,7 +138,10 @@ export type InternalFns = {
 /* -------------------------------------------------- listen calls from main thread -------------------------------------------------- */
 
 self.addEventListener("message", async (event) => {
-  const { meta, args } = event.data as MainThreadMessage;
+  if (!isMainThreadMessage(event.data)) {
+    return;
+  }
+  const { meta, args } = event.data;
   const { internal, name } = meta;
 
   // get the corresponding worker function

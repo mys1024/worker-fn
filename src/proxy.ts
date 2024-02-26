@@ -1,5 +1,6 @@
 import type { AnyFn, MainThreadMessage, WorkerThreadMessage } from "./types.ts";
 import type { InternalFns } from "./worker.ts";
+import { isWorkerThreadMessage } from "./utils.ts";
 
 /* -------------------------------------------------- common -------------------------------------------------- */
 
@@ -56,14 +57,14 @@ export function use<FN extends AnyFn>(
     internal: boolean;
   },
 ) {
-  // Options
+  // options
   const { transfer, internal } = options;
 
-  // States
+  // states
   let callCount = 0;
   let callingCount = 0;
 
-  // Worker instance and its TTL
+  // worker instance and its TTL
   let workerInst: Worker | undefined;
   let workerTtlTimeoutId: number | undefined;
   const ttl = worker instanceof Worker
@@ -72,40 +73,42 @@ export function use<FN extends AnyFn>(
     ? 0
     : worker.ttl;
 
-  // Proxy function
+  // the proxy function
   function fn(...args: Parameters<FN>) {
     return new Promise<AwaitedRet<FN>>((resolve, reject) => {
-      // Update states
+      // update states
       callCount++;
       callingCount++;
 
-      // Identify the current call
+      // identify the current call
       const key = callCount;
 
-      // Get the worker instance
+      // get the worker instance
       const workerInstCurr = workerInst = workerInst
         ? workerInst
         : worker instanceof Worker
         ? worker
         : worker.factory();
 
-      // Stop the TTL timeout of the worker instance
+      // stop the TTL timeout of the worker instance
       clearTimeout(workerTtlTimeoutId);
 
-      // Event handler for messages from the worker thread
+      // the event handler for messages from worker
       const handler = (event: MessageEvent) => {
-        // Destructure the message from worker thread
-        const { meta, ok, ret, err } = event
-          .data as WorkerThreadMessage<FN>;
-        // Check if the message corresponds to the current call
+        // destructure the message from worker
+        if (!isWorkerThreadMessage(event.data)) {
+          return;
+        }
+        const { meta, ok, ret, err } = event.data as WorkerThreadMessage<FN>;
+        // check if the message corresponds to the current call
         if (meta.key !== key) {
           return;
         }
-        // Remove the message event listener
+        // remove the message event listener
         workerInstCurr.removeEventListener("message", handler);
-        // Update states
+        // update states
         callingCount--;
-        // Set a TTL timeout for the worker instance
+        // set a TTL timeout for the worker instance
         if (callingCount === 0 && ttl >= 0 && ttl !== Infinity) {
           const terminate = () => {
             workerInst?.terminate();
@@ -116,7 +119,7 @@ export function use<FN extends AnyFn>(
             ? (terminate(), undefined)
             : setTimeout(terminate, ttl);
         }
-        // resolve the promise with the return value, or reject the promise with the err
+        // resolve with the return value, or reject with the err
         if (ok) {
           resolve(ret);
         } else {
@@ -128,10 +131,10 @@ export function use<FN extends AnyFn>(
         }
       };
 
-      // Listen for messages from the worker thread
+      // listen for messages from the worker
       workerInstCurr.addEventListener("message", handler);
 
-      // Post a message to the worker
+      // post a call message to the worker
       workerInstCurr.postMessage(
         {
           meta: {
@@ -148,7 +151,7 @@ export function use<FN extends AnyFn>(
     });
   }
 
-  // Return the proxy function
+  // return the proxy function
   return { fn };
 }
 
