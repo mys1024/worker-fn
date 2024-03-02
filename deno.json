@@ -8,11 +8,9 @@
     "cache:reload": "deno cache --reload src/main.ts test/**/*.test.ts",
     "test": "deno test -A",
     "test:watch": "deno test -A --watch",
-    "test:cover": "deno test -A --coverage",
-    "cover": "deno coverage",
-    "cover:html": "deno coverage --html",
-    "publish": "deno publish",
-    "publish:dry": "deno publish --dry-run"
+    "test:cov": "deno test -A --coverage && deno coverage && deno coverage --html",
+    "bump": "deno run -A jsr:@mys/bump@1",
+    "publish": "deno publish"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@0.217"
