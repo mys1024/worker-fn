@@ -1,7 +1,7 @@
 # worker-fn
 
 [![GitHub License](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)
-[![GitHub Tag](https://img.shields.io/github/v/tag/mys1024/worker-fn?sort=semver&style=flat-square&label=JSR&color=rgb(247%2C223%2C30))](https://jsr.io/@mys1024/worker-fn)
+[![GitHub Tag](https://img.shields.io/github/v/tag/mys1024/worker-fn?sort=semver&style=flat-square&label=JSR&color=rgb(247%2C223%2C30))](https://jsr.io/@mys/worker-fn)
 [![NPM Version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=rgb(203%2C56%2C55))](https://www.npmjs.com/package/worker-fn)
 [![NPM Downloads](https://img.shields.io/npm/dy/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
 [![GitHub Actions Workflow CI Status](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/ci.yml?label=CI&&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
@@ -60,12 +60,12 @@ console.log(await fib(5)); // 5
 
 ## Importing from JSR
 
-`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys1024/worker-fn).
+`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys/worker-fn).
 
 If you are using Deno, you can import `worker-fn` from JSR:
 
 ```typescript
-import { defineWorkerFn, useWorkerFn } from "jsr:@mys1024/worker-fn@2";
+import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@2";
 ```
 
 ## License
