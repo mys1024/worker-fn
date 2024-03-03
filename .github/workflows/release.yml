@@ -18,9 +18,11 @@ jobs:
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.41.0
 
-      # - name: Test
-      #   run: deno task test
+      - name: Test
+        run: deno task test
 
   publish-to-jsr:
     needs: test

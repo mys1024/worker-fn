@@ -12,7 +12,8 @@ jobs:
   test:
     strategy:
       matrix:
-        deno-version: [v1.x, vx.x.x]
+        # deno-version: [v1.x, vx.x.x]
+        deno-version: [v1.41.0]
         os: [ubuntu-latest, windows-latest]
       fail-fast: false
 
