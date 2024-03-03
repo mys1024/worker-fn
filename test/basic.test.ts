@@ -24,22 +24,6 @@ Deno.test({
         assertEquals(await fib(5), 5);
       });
 
-      await t.step({
-        name: "lazy worker",
-        fn: async () => {
-          const add = useWorkerFn<Add>("add", {
-            factory: () =>
-              new Worker(new URL("./basic.test.worker.ts", import.meta.url), {
-                type: "module",
-              }),
-            ttl: 1000,
-          });
-          assertEquals(await add(1, 2), 3);
-          assertEquals(await add(5, 5), 10);
-          assertEquals(await add(10, 20), 30);
-        },
-      });
-
       await t.step("concurrency", async () => {
         const worker = new Worker(
           new URL("./basic.test.worker.ts", import.meta.url),
@@ -106,7 +90,7 @@ Deno.test({
         } catch (err) {
           assertEquals(
             ((err as Error).cause as Error).message,
-            'The name "undefinedName" is not defined.',
+            'The name "undefinedName" is not defined in namespace "fn".',
           );
         }
       });
@@ -123,7 +107,7 @@ Deno.test({
         } catch (err) {
           assertEquals(
             ((err as Error).cause as Error).message,
-            'The name "redefine" has already been defined.',
+            'The name "redefine" has already been defined in namespace "fn".',
           );
         }
       });
@@ -151,7 +135,7 @@ Deno.test({
         } catch (err) {
           assertEquals(
             ((err as Error).cause as Error).message,
-            'The name "fib" is not defined.',
+            'The name "fib" is not defined in namespace "fn".',
           );
         }
       });

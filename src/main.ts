@@ -3,5 +3,5 @@
  * making it easy to call functions defined in the Worker.
  */
 
-export { defineWorkerFn, defineWorkerFns } from "./worker.ts";
-export { inspectWorker, useWorkerFn, useWorkerFns } from "./proxy.ts";
+export { defineWorkerFn, defineWorkerFns } from "./define.ts";
+export { inspectWorker, useWorkerFn, useWorkerFns } from "./use.ts";
