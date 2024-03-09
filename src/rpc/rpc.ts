@@ -1,14 +1,20 @@
 import type {
   AnyFn,
   AwaitedRet,
+  MsgPort,
   MsgPortNormalized,
   RpcCallMsg,
   RpcReturnMsg,
 } from "./types.ts";
-import { isRpcCallMsg, isRpcReturnMsg, isTransferable } from "./utils.ts";
+import {
+  isRpcCallMsg,
+  isRpcReturnMsg,
+  isTransferable,
+  toMsgPortNormalized,
+} from "./utils.ts";
 
 const DEFAULT_NAMESPACE = "rpc";
-const RPC_AGENT_SYM = Symbol("RpcAgentSym");
+const RPC_AGENT_SYM = Symbol("RPC_AGENT_SYM");
 
 export class RpcAgent {
   #msgPort: MsgPortNormalized;
@@ -31,16 +37,20 @@ export class RpcAgent {
     }>
   >();
 
-  constructor(msgPort: MsgPortNormalized) {
+  static getRpcAgent(msgPort: MsgPort): RpcAgent {
+    return (msgPort as any)[RPC_AGENT_SYM] || new RpcAgent(msgPort);
+  }
+
+  constructor(msgPort: MsgPort) {
     // prevent double usage
     if ((msgPort as any)[RPC_AGENT_SYM]) {
       throw new Error(
-        "The MsgPort has already been used by another RpcAgent, use `getRpcAgent()` to get the RpcAgent instead.",
+        "The MsgPort has already been used by another RpcAgent instance, invoke `RpcAgent.getRpcAgent()` to get that RpcAgent instance instead.",
       );
     }
     (msgPort as any)[RPC_AGENT_SYM] = this;
     // init properties
-    this.#msgPort = msgPort;
+    this.#msgPort = toMsgPortNormalized(msgPort);
     // start listening to messages
     this.#startListening();
   }
@@ -206,11 +216,4 @@ export class RpcAgent {
       }
     });
   }
-}
-
-export function getRpcAgent(msgPort: MsgPortNormalized): RpcAgent {
-  if ((msgPort as any)[RPC_AGENT_SYM]) {
-    return (msgPort as any)[RPC_AGENT_SYM];
-  }
-  return new RpcAgent(msgPort);
 }

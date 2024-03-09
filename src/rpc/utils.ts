@@ -1,4 +1,9 @@
-import { RpcCallMsg, RpcReturnMsg } from "./types.ts";
+import {
+  MsgPort,
+  MsgPortNormalized,
+  RpcCallMsg,
+  RpcReturnMsg,
+} from "./types.ts";
 
 const _global = getGlobal();
 
@@ -45,4 +50,14 @@ export function isRpcCallMsg(val: any): val is RpcCallMsg {
 
 export function isRpcReturnMsg(val: any): val is RpcReturnMsg {
   return val?.type === "return";
+}
+
+export function toMsgPortNormalized(msgPort: MsgPort): MsgPortNormalized {
+  return "on" in msgPort
+    ? {
+      postMessage: (msg) => msgPort.postMessage(msg),
+      addEventListener: (type, listener) =>
+        msgPort.on(type, (value) => listener({ data: value })),
+    }
+    : msgPort;
 }

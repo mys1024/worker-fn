@@ -1,6 +1,6 @@
-import type { AnyFn, UseWorkerFnOpts } from "./types.ts";
-import type { InternalFns } from "./define.ts";
-import { getRpcAgent } from "./rpc/rpc.ts";
+import type { AnyFn, InternalFns, UseWorkerFnOpts } from "./types.ts";
+import type { MsgPort } from "./rpc/types.ts";
+import { RpcAgent } from "./rpc/rpc.ts";
 
 /* -------------------------------------------------- common -------------------------------------------------- */
 
@@ -14,7 +14,7 @@ type ProxyFns<FNS extends Record<string, AnyFn>> = {
   [P in keyof FNS]: ProxyFn<FNS[P]>;
 };
 
-/* -------------------------------------------------- useWorkerFn(s) -------------------------------------------------- */
+/* -------------------------------------------------- useWorkerFn() -------------------------------------------------- */
 
 /**
  * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
@@ -26,12 +26,12 @@ type ProxyFns<FNS extends Record<string, AnyFn>> = {
  */
 export function useWorkerFn<FN extends AnyFn>(
   name: string,
-  worker: Worker,
+  worker: MsgPort,
   options: UseWorkerFnOpts<FN> = {},
 ): ProxyFn<FN> {
   const { transfer } = options;
-  const rpcAgent = getRpcAgent(worker);
-
+  const rpcAgent = RpcAgent.getRpcAgent(worker);
+  // the proxy function
   function fn(...args: Parameters<FN>) {
     return rpcAgent.callRemoteFn(name, {
       args,
@@ -39,33 +39,38 @@ export function useWorkerFn<FN extends AnyFn>(
       transfer: transfer ? () => transfer({ args }) : undefined,
     });
   }
-
   return fn;
 }
+
+/* -------------------------------------------------- useWorkerFns() -------------------------------------------------- */
 
 /**
  * Invoke this function in the main thread to create proxy functions of all worker functions.
  *
- * @param worker - Either a Worker instance or an object containing options for creating a lazy Worker instance.
+ * @param worker - A Worker instance.
  * @returns Proxy functions.
  */
 export function useWorkerFns<FNS extends Record<string, AnyFn>>(
-  worker: Worker,
+  worker: MsgPort,
 ): ProxyFns<FNS> {
+  const memo = new Map<string, ProxyFn<AnyFn>>();
   const fns = new Proxy({}, {
     get(_target, name) {
       if (typeof name !== "string") {
         throw new Error("The name must be a string.", { cause: name });
       }
+      if (memo.has(name)) {
+        return memo.get(name);
+      }
       const fn = useWorkerFn(name, worker);
+      memo.set(name, fn);
       return fn;
     },
   });
-
   return fns as ProxyFns<FNS>;
 }
 
-/* -------------------------------------------------- inspectWorker -------------------------------------------------- */
+/* -------------------------------------------------- inspectWorker() -------------------------------------------------- */
 
 /**
  * Inspect a worker.
@@ -76,7 +81,7 @@ export function useWorkerFns<FNS extends Record<string, AnyFn>>(
 export async function inspectWorker(worker: Worker): Promise<{
   names: string[];
 }> {
-  const rpcAgent = getRpcAgent(worker);
+  const rpcAgent = RpcAgent.getRpcAgent(worker);
   const names = await rpcAgent.callRemoteFn<InternalFns["names"]>("names", {
     namespace: "fn-internal",
   });

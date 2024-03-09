@@ -1,3 +1,5 @@
+import type { MsgPort } from "./rpc/types.ts";
+
 export type AnyFn = (...args: any[]) => any;
 
 export interface DefineWorkerFnOpts {
@@ -8,6 +10,8 @@ export interface DefineWorkerFnOpts {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
    */
   transfer?: boolean;
+
+  port?: MsgPort;
 }
 
 export interface UseWorkerFnOpts<FN extends AnyFn> {
@@ -20,3 +24,7 @@ export interface UseWorkerFnOpts<FN extends AnyFn> {
    */
   transfer?: (ctx: { args: Parameters<FN> }) => Transferable[];
 }
+
+export type InternalFns = {
+  names: () => string[];
+};

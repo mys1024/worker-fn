@@ -19,6 +19,13 @@ export interface MsgPortNormalized {
   ) => void;
 }
 
+export interface MsgPortNode {
+  postMessage(value: any): void;
+  on(event: "message", listener: (value: any) => void): void;
+}
+
+export type MsgPort = MsgPortNormalized | MsgPortNode;
+
 /* -------------------------------------------------- RPC -------------------------------------------------- */
 
 export interface RpcMeta {

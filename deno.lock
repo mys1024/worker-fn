@@ -3,7 +3,8 @@
   "packages": {
     "specifiers": {
       "jsr:@std/assert@0.217": "jsr:@std/assert@0.217.0",
-      "jsr:@std/fmt@^0.217.0": "jsr:@std/fmt@0.217.0"
+      "jsr:@std/fmt@^0.217.0": "jsr:@std/fmt@0.217.0",
+      "npm:@types/node": "npm:@types/node@18.16.19"
     },
     "jsr": {
       "@std/assert@0.217.0": {
@@ -14,6 +15,12 @@
       },
       "@std/fmt@0.217.0": {
         "integrity": "cb99f82500b8da20202fedfa8bb94dd0222e81f0494ed9087de20ee3d8a39a8d"
+      }
+    },
+    "npm": {
+      "@types/node@18.16.19": {
+        "integrity": "sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==",
+        "dependencies": {}
       }
     }
   },
