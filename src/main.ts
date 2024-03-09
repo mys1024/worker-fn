@@ -1,6 +1,6 @@
 /**
- * `worker-fn` hides the complexity of communication between the main thread and Worker threads,
- * making it easy to call functions defined in the Worker.
+ * worker-fn hides the complexity of communication between the JavaScript main thread and Worker threads,
+ * making it easy to call the functions defined in workers.
  */
 
 export { defineWorkerFn, defineWorkerFns } from "./define.ts";

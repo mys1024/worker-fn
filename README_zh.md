@@ -10,9 +10,9 @@
 
 [English](./README.md) | 中文文档
 
-`worker-fn` 隐藏了主线程与 [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 线程之间通信的复杂性，简化了调用定义在 Worker 中的函数。
+`worker-fn` 隐藏了 JavaScript 主线程与 [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 线程之间的通信的复杂性，可以让你方便地调用定义在 Worker 中的函数。
 
-你可以通过 `worker-fn` 在 JavaScript 主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值会包裹在 Promise 中），代理函数会调用定义在 Worker 线程中对应的工作函数。
+你可以通过 `worker-fn` 在 JavaScript 主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值会被包裹在 Promise 中），代理函数会通过消息事件调用定义在 Worker 中的对应的工作函数。
 
 ![Concept](./docs/concept.png)
 
@@ -57,7 +57,7 @@ console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5
 ```
 
-### 在 Node.js 中与 `node:worker_threads` 一起使用
+### 在 Node.js 中使用
 
 `math.worker.ts`:
 
@@ -98,13 +98,7 @@ console.log(await fib(5)); // 5
 
 ## 从 JSR 导入
 
-`worker-fn` 同时发布在 [npm](https://www.npmjs.com/package/worker-fn) 和 [JSR](https://jsr.io/@mys/worker-fn) 上。
-
-如果你使用 [Deno](https://deno.com), 你可以从 JSR 导入 `worker-fn`:
-
-```typescript
-import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@3";
-```
+`worker-fn` 同时发布在 [npm](https://www.npmjs.com/package/worker-fn) 和 [JSR](https://jsr.io/@mys/worker-fn) 上，如果你想从 JSR 导入 `worker-fn`，请参考[这篇文档](https://jsr.io/docs/introduction#using-jsr-packages)。
 
 ## License
 

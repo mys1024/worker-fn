@@ -18,6 +18,14 @@
   "exports": {
     ".": "./src/main.ts"
   },
+  "publish": {
+    "include": [
+      "src",
+      "docs/concept.png",
+      "README*.md",
+      "LICENSE"
+    ]
+  },
   "lint": {
     "rules": {
       "exclude": [

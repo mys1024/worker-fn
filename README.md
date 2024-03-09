@@ -10,15 +10,15 @@
 
 English | [中文文档](./README_zh.md)
 
-`worker-fn` hides the complexity of communication between the main thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) threads, making it easy to call functions defined in the Worker.
+`worker-fn` hides the complexity of communication between the JavaScript main thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) threads, making it easy to call the functions defined in workers.
 
-`worker-fn` allows you to create **proxy functions** in the JavaScript main thread that call corresponding **worker functions** defined in Worker threads. The proxy function has the same function signature as the worker function (except that the return value of the proxy function will be wrapped in a Promise).
+`worker-fn` allows you to create **proxy functions** in the main thread that call the corresponding **worker functions** defined in Worker threads through message events. Proxy functions have the same function signatures as the corresponding worker functions (except that the return values of proxy functions will be wrapped in Promises).
 
 ![Concept](./docs/concept.png)
 
 ## Usage
 
-### Using in browsers or Deno
+### Using in browser or Deno
 
 In `math.worker.ts`:
 
@@ -57,7 +57,7 @@ console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5
 ```
 
-### Using in Node.js with `node:worker_threads`
+### Using in Node.js
 
 In `math.worker.ts`:
 
@@ -98,13 +98,7 @@ console.log(await fib(5)); // 5
 
 ## Importing from JSR
 
-`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys/worker-fn).
-
-If you are using Deno, you can import `worker-fn` from JSR:
-
-```typescript
-import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@3";
-```
+`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys/worker-fn). If you want to import `worker-fn` from JSR, please refer to [this document](https://jsr.io/docs/introduction#using-jsr-packages).
 
 ## License
 
