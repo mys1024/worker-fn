@@ -42,10 +42,14 @@ export function useWorkerFn<FN extends AnyFn>(
  * Invoke this function in the main thread to create proxy functions of all worker functions.
  *
  * @param worker - A Worker instance.
+ * @param options - An object containing options.
  * @returns Proxy functions.
  */
 export function useWorkerFns<FNS extends Record<string, AnyFn>>(
   worker: MsgPort,
+  options: {
+    [NAME in keyof FNS]?: UseWorkerFnOpts<FNS[NAME]>;
+  } = {},
 ): ProxyFns<FNS> {
   const memo = new Map<string, ProxyFn<AnyFn>>();
   const fns = new Proxy({}, {
@@ -56,7 +60,7 @@ export function useWorkerFns<FNS extends Record<string, AnyFn>>(
       if (memo.has(name)) {
         return memo.get(name);
       }
-      const fn = useWorkerFn(name, worker);
+      const fn = useWorkerFn(name, worker, options[name]);
       memo.set(name, fn);
       return fn;
     },

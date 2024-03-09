@@ -26,7 +26,11 @@ Deno.test("fns", async (t) => {
         type: "module",
       },
     );
-    const { add, fib } = useWorkerFns<Fns>(worker);
+    const { add, fib } = useWorkerFns<Fns>(worker, {
+      fib: {
+        transfer: () => [],
+      },
+    });
     assertEquals(await add(1, 2), 3);
     assertEquals(await add(5, 5), 10);
     assertEquals(await add(10, 20), 30);
