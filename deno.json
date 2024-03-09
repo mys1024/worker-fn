@@ -23,7 +23,8 @@
       "src",
       "docs/concept.png",
       "README*.md",
-      "LICENSE"
+      "LICENSE",
+      "deno.json"
     ]
   },
   "lint": {
