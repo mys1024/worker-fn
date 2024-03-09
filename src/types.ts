@@ -1,5 +1,7 @@
 import type { MsgPort } from "./rpc/types.ts";
 
+/* -------------------------------------------------- general -------------------------------------------------- */
+
 export type AnyFn = (...args: any[]) => any;
 
 export type AwaitedRet<FN extends AnyFn> = Awaited<ReturnType<FN>>;
@@ -12,9 +14,13 @@ export type ProxyFns<FNS extends Record<string, AnyFn>> = {
   [P in keyof FNS]: ProxyFn<FNS[P]>;
 };
 
+/* -------------------------------------------------- internal functions -------------------------------------------------- */
+
 export type InternalFns = {
   names: () => string[];
 };
+
+/* -------------------------------------------------- options -------------------------------------------------- */
 
 export interface DefineWorkerFnOpts {
   /**
