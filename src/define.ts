@@ -1,11 +1,10 @@
 import type { AnyFn, DefineWorkerFnOpts, InternalFns } from "./types.ts";
 import type { MsgPort, MsgPortNormalized } from "./rpc/types.ts";
-import { getGlobal } from "./rpc/utils.ts";
 import { RpcAgent } from "./rpc/rpc.ts";
 
 /* -------------------------------------------------- common -------------------------------------------------- */
 
-const _global = getGlobal() as MsgPortNormalized;
+const _global = Function("return this")() as MsgPortNormalized;
 
 /* -------------------------------------------------- defineWorkerFn() -------------------------------------------------- */
 
@@ -16,9 +15,9 @@ const _global = getGlobal() as MsgPortNormalized;
  * @param fn - The worker function.
  * @param options - An object containing options.
  */
-export function defineWorkerFn<FN extends AnyFn>(
+export function defineWorkerFn(
   name: string,
-  fn: FN,
+  fn: AnyFn,
   options: DefineWorkerFnOpts = {},
 ): void {
   const { transfer, port = _global } = options;
@@ -35,7 +34,7 @@ export function defineWorkerFn<FN extends AnyFn>(
 /**
  * Invoke this function in worker threads to define worker functions.
  *
- * @param functions - An object containing worker functions. Keys will be used as the name of the worker functions.
+ * @param functions - An object containing worker functions. Keys will be used as the names of the worker functions.
  * @param options - An object containing options.
  */
 export function defineWorkerFns(
@@ -49,24 +48,26 @@ export function defineWorkerFns(
 
 /* -------------------------------------------------- internal functions -------------------------------------------------- */
 
-const INTERNAL_FNS_DEFINED_SYM = Symbol("INTERNAL_FNS_DEFINED_SYM");
+const INTERNAL_FNS_DEFINED = Symbol("internalFnsDefined");
 
+/**
+ * Ensure that internal functions are defined.
+ */
 function ensureInternalFns(port: MsgPort) {
   // prevent double usage
-  if ((port as any)[INTERNAL_FNS_DEFINED_SYM]) {
+  if ((port as any)[INTERNAL_FNS_DEFINED]) {
     return;
   }
-  (port as any)[INTERNAL_FNS_DEFINED_SYM] = true;
+  (port as any)[INTERNAL_FNS_DEFINED] = true;
   // get RpcAgent instance
   const rpcAgent = RpcAgent.getRpcAgent(port);
-  // internal functions
+  // define internal functions
   const internalFns: InternalFns = {
     /**
      * @returns Names of defined worker functions
      */
     names: () => rpcAgent.getLocalFnNames("fn"),
   };
-  // define internal functions
   for (const [name, fn] of Object.entries(internalFns)) {
     rpcAgent.defineLocalFn(name, fn, { namespace: "fn-internal" });
   }

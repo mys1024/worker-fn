@@ -14,10 +14,11 @@ import {
 } from "./utils.ts";
 
 const DEFAULT_NAMESPACE = "rpc";
-const RPC_AGENT_SYM = Symbol("RPC_AGENT_SYM");
+const RPC_AGENT = Symbol("rpcAgent");
 
 export class RpcAgent {
   #msgPort: MsgPortNormalized;
+  #callCount = 0;
 
   /** namespace -> name -> fnConf */
   #localFns = new Map<
@@ -38,17 +39,17 @@ export class RpcAgent {
   >();
 
   static getRpcAgent(msgPort: MsgPort): RpcAgent {
-    return (msgPort as any)[RPC_AGENT_SYM] || new RpcAgent(msgPort);
+    return (msgPort as any)[RPC_AGENT] || new RpcAgent(msgPort);
   }
 
   constructor(msgPort: MsgPort) {
     // prevent double usage
-    if ((msgPort as any)[RPC_AGENT_SYM]) {
+    if ((msgPort as any)[RPC_AGENT]) {
       throw new Error(
         "The MsgPort has already been used by another RpcAgent instance, invoke `RpcAgent.getRpcAgent()` to get that RpcAgent instance instead.",
       );
     }
-    (msgPort as any)[RPC_AGENT_SYM] = this;
+    (msgPort as any)[RPC_AGENT] = this;
     // init properties
     this.#msgPort = toMsgPortNormalized(msgPort);
     // start listening to messages
@@ -81,17 +82,15 @@ export class RpcAgent {
 
     const keyCallMap = this.#getKeyCallMap(namespace, true);
 
-    const key = Math.random();
+    const key = ++this.#callCount;
     const ret = new Promise<AwaitedRet<FN>>((resolve, reject) => {
       keyCallMap.set(key, { resolve, reject });
     });
 
     this.#sendCallMsg({
-      meta: {
-        ns: namespace,
-        name,
-        key,
-      },
+      ns: namespace,
+      name,
+      key,
       type: "call",
       args,
     }, {
@@ -143,14 +142,15 @@ export class RpcAgent {
   #startListening() {
     this.#msgPort.addEventListener("message", async (event) => {
       if (isRpcCallMsg(event.data)) {
-        const { meta, args } = event.data;
-        const { ns, name } = meta;
+        const { ns, name, key, args } = event.data;
         // get the local function
         const nameFnMap = this.#getNameFnMap(ns, false);
         if (!nameFnMap) {
           this.#sendReturnMsg({
-            meta,
             type: "return",
+            ns,
+            name,
+            key,
             ok: false,
             err: new Error(`The namespace "${ns}" is not defined.`),
           });
@@ -159,8 +159,10 @@ export class RpcAgent {
         const fnConf = nameFnMap.get(name);
         if (!fnConf) {
           this.#sendReturnMsg({
-            meta,
             type: "return",
+            ns,
+            name,
+            key,
             ok: false,
             err: new Error(
               `The name "${name}" is not defined in namespace "${ns}".`,
@@ -173,8 +175,10 @@ export class RpcAgent {
         try {
           const ret = await fn(...args);
           this.#sendReturnMsg({
-            meta,
             type: "return",
+            ns,
+            name,
+            key,
             ok: true,
             ret,
           }, {
@@ -182,15 +186,16 @@ export class RpcAgent {
           });
         } catch (err) {
           this.#sendReturnMsg({
-            meta,
             type: "return",
+            ns,
+            name,
+            key,
             ok: false,
             err,
           });
         }
       } else if (isRpcReturnMsg(event.data)) {
-        const { meta, ok, ret, err } = event.data;
-        const { ns, name, key } = meta;
+        const { ns, name, key, ok, ret, err } = event.data;
         // get the promise resolvers
         const keyCallMap = this.#getKeyCallMap(ns, false);
         if (!keyCallMap) {

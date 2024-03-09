@@ -1,18 +1,12 @@
-import type { AnyFn, InternalFns, UseWorkerFnOpts } from "./types.ts";
 import type { MsgPort } from "./rpc/types.ts";
 import { RpcAgent } from "./rpc/rpc.ts";
-
-/* -------------------------------------------------- common -------------------------------------------------- */
-
-type AwaitedRet<FN extends AnyFn> = Awaited<ReturnType<FN>>;
-
-type ProxyFn<FN extends AnyFn> = (
-  ...args: Parameters<FN>
-) => Promise<AwaitedRet<FN>>;
-
-type ProxyFns<FNS extends Record<string, AnyFn>> = {
-  [P in keyof FNS]: ProxyFn<FNS[P]>;
-};
+import type {
+  AnyFn,
+  InternalFns,
+  ProxyFn,
+  ProxyFns,
+  UseWorkerFnOpts,
+} from "./types.ts";
 
 /* -------------------------------------------------- useWorkerFn() -------------------------------------------------- */
 
@@ -20,7 +14,7 @@ type ProxyFns<FNS extends Record<string, AnyFn>> = {
  * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
  *
  * @param name - The name that identifies the worker function.
- * @param worker - Either a Worker instance or an object containing options for creating a lazy Worker instance.
+ * @param worker - A Worker instance.
  * @param options - An object containing options.
  * @returns The proxy function.
  */
@@ -75,10 +69,10 @@ export function useWorkerFns<FNS extends Record<string, AnyFn>>(
 /**
  * Inspect a worker.
  *
- * @param worker The worker.
+ * @param worker A worker instance.
  * @returns Information about the worker.
  */
-export async function inspectWorker(worker: Worker): Promise<{
+export async function inspectWorker(worker: MsgPort): Promise<{
   names: string[];
 }> {
   const rpcAgent = RpcAgent.getRpcAgent(worker);
