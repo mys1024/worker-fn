@@ -103,7 +103,7 @@ console.log(await fib(5)); // 5
 If you are using Deno, you can import `worker-fn` from JSR:
 
 ```typescript
-import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@2";
+import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@3";
 ```
 
 ## License

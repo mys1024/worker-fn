@@ -103,7 +103,7 @@ console.log(await fib(5)); // 5
 如果你使用 [Deno](https://deno.com), 你可以从 JSR 导入 `worker-fn`:
 
 ```typescript
-import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@2";
+import { defineWorkerFn, useWorkerFn } from "jsr:@mys/worker-fn@3";
 ```
 
 ## License
