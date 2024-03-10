@@ -1,3 +1,4 @@
+import { getTransferables, isSupported } from "@okikio/transferables";
 import type {
   AnyFn,
   AwaitedRet,
@@ -9,12 +10,27 @@ import type {
 import {
   isRpcCallMsg,
   isRpcReturnMsg,
-  isTransferable,
   toMsgPortNormalized,
 } from "./utils.ts";
 
 const DEFAULT_NAMESPACE = "rpc";
 const RPC_AGENT = Symbol("rpcAgent");
+
+// Support flags for features like streams and channels, 
+// we want to confirm if streams and channels are transferable
+// transferables aren't supported the same way across all browsers and runtimes,
+// in some runtimes it's more like partial support
+let supportFlags: Awaited<ReturnType<typeof isSupported>> = { streams: false, channel: false };
+(async () => {
+  await new Promise<void>((resolve) => {
+    isSupported()
+      .then((res) => (supportFlags = res, resolve()));
+
+    // Just in-case some runtime takes longer that we want to confirm support for streams and/or channels
+    // The `isSupported` function is supposed to be fairly fast, but just in-case it isn't we set a 3sec cutoff
+    setTimeout(() => resolve(), 3000);
+  });
+})();
 
 export class RpcAgent {
   #msgPort: MsgPortNormalized;
@@ -182,7 +198,10 @@ export class RpcAgent {
             ok: true,
             ret,
           }, {
-            transfer: transfer && isTransferable(ret) ? [ret] : undefined,
+            // If the function is marked for transferring data, it uses `getTransferables` to grab none cloneable data,
+            // transerables exist due to them not being able to be cloned, so to ensure in a complex object we grab all the 
+            // transferables that can't be cloned we traverse the entire object finding all transferables, and listing them to be transfered
+            transfer: transfer ? getTransferables(ret, supportFlags.streams) : undefined,
           });
         } catch (err) {
           this.#sendReturnMsg({
