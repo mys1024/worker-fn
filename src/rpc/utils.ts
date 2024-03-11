@@ -1,6 +1,3 @@
-// To keep the same general export shape
-export { isTransferable } from "@okikio/transferables";
-
 import {
   MsgPort,
   MsgPortNormalized,

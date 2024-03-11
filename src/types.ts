@@ -45,11 +45,10 @@ export interface DefineWorkerFnOpts {
 
 export interface UseWorkerFnOpts<FN extends AnyFn> {
   /**
-   * A function that determines objects to be transferred when posting messages to the worker thread.
+   * A boolean value indicating whether to transfer the arguments, or a function that returns transferable objects should be transferred.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
-   * @param ctx The context of the function call.
    * @returns Transferable objects.
    */
-  transfer?: (ctx: { args: Parameters<FN> }) => Transferable[];
+  transfer?: boolean | ((ctx: { args: Parameters<FN> }) => Transferable[]);
 }

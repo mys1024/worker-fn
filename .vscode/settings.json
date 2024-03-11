@@ -32,8 +32,10 @@
     "corepack",
     "deno",
     "denoland",
+    "okikio",
     "pnpx",
     "runtimes",
+    "Transferables",
     "tsup",
     "typeof"
   ]
