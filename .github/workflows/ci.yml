@@ -12,12 +12,12 @@ jobs:
   test:
     strategy:
       matrix:
-        # deno-version: [v1.x, vx.x.x]
+        # deno-version: [vx.x.x]
         deno-version: [v1.41.0]
         os: [ubuntu-latest, windows-latest]
       fail-fast: false
 
-    name: deno ${{ matrix.deno-version }}, ${{ matrix.os }}
+    name: Test on Deno ${{ matrix.deno-version }}, ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
