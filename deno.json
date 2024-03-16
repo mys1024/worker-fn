@@ -21,7 +21,7 @@
   "publish": {
     "include": [
       "src",
-      "docs/concept.png",
+      "docs/concepts.png",
       "README*.md",
       "LICENSE",
       "deno.json"

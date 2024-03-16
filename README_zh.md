@@ -3,7 +3,8 @@
 # worker-fn
 
 [![license](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)
-[![jsr-version](https://img.shields.io/github/v/tag/mys1024/worker-fn?sort=semver&style=flat-square&label=jsr&color=rgb(247%2C223%2C30))](https://jsr.io/@mys/worker-fn)
+[![docs](https://img.shields.io/badge/docs-reference-rgb(247%2C223%2C30)?style=flat-square)](https://jsr.io/@mys/worker-fn/doc?style=flat-square)
+[![jsr-version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjsr.io%2F%40mys%2Fworker-fn%2Fmeta.json&query=%24.latest&style=flat-square&label=jsr&color=rgb(247%2C223%2C30))](https://jsr.io/@mys/worker-fn)
 [![npm-version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=rgb(203%2C56%2C55))](https://www.npmjs.com/package/worker-fn)
 [![npm-minzip](https://img.shields.io/bundlephobia/minzip/worker-fn?style=flat-square&label=minzip)](https://bundlephobia.com/package/worker-fn)
 [![npm-downloads](https://img.shields.io/npm/dy/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
@@ -106,7 +107,7 @@ console.log(await fib(5)); // 5
 
 </details>
 
-### `defineWorkerFns()` and `useWorkerFns()`
+### 使用 `defineWorkerFns()` 和 `useWorkerFns()`
 
 <details>
 
@@ -155,4 +156,4 @@ console.log(await fib(5)); // 5
 
 ## License
 
-MIT License &copy; 2024-PRESENT mys1024
+[MIT](./LICENSE) License &copy; 2024-PRESENT [mys1024](https://github.com/mys1024)
