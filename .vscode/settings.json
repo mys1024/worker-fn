@@ -21,8 +21,10 @@
     "deno",
     "denoland",
     "minzip",
+    "okikio",
     "pnpx",
     "runtimes",
+    "Transferables",
     "tsup",
     "typeof"
   ]

@@ -27,10 +27,9 @@ export function useWorkerFn<FN extends AnyFn>(
   const rpcAgent = RpcAgent.getRpcAgent(worker);
   // the proxy function
   function fn(...args: Parameters<FN>) {
-    return rpcAgent.callRemoteFn(name, {
-      args,
+    return rpcAgent.callRemoteFn(name, args, {
       namespace: "fn",
-      transfer: transfer ? () => transfer({ args }) : undefined,
+      transfer,
     });
   }
   return fn;
@@ -80,7 +79,7 @@ export async function inspectWorker(worker: MsgPort): Promise<{
   names: string[];
 }> {
   const rpcAgent = RpcAgent.getRpcAgent(worker);
-  const names = await rpcAgent.callRemoteFn<InternalFns["names"]>("names", {
+  const names = await rpcAgent.callRemoteFn<InternalFns["names"]>("names", [], {
     namespace: "fn-internal",
   });
   return { names };

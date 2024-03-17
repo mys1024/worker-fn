@@ -1,3 +1,4 @@
+import { getTransferables, isSupported } from "@okikio/transferables";
 import type {
   AnyFn,
   AwaitedRet,
@@ -6,15 +7,20 @@ import type {
   RpcCallMsg,
   RpcReturnMsg,
 } from "./types.ts";
-import {
-  isRpcCallMsg,
-  isRpcReturnMsg,
-  isTransferable,
-  toMsgPortNormalized,
-} from "./utils.ts";
+import { isRpcCallMsg, isRpcReturnMsg, toMsgPortNormalized } from "./utils.ts";
 
 const DEFAULT_NAMESPACE = "rpc";
 const RPC_AGENT = Symbol("rpcAgent");
+
+// Support flags for features like streams and channels,
+// we want to confirm if streams and channels are transferable
+// transferables aren't supported the same way across all browsers and runtimes,
+// in some runtimes it's more like partial support
+let supportFlags: Awaited<ReturnType<typeof isSupported>> = {
+  streams: false,
+  channel: false,
+};
+isSupported().then((res) => (supportFlags = res));
 
 export class RpcAgent {
   #msgPort: MsgPortNormalized;
@@ -73,12 +79,11 @@ export class RpcAgent {
     }
   }
 
-  callRemoteFn<FN extends AnyFn>(name: string, options: {
+  callRemoteFn<FN extends AnyFn>(name: string, args: Parameters<FN>, options: {
     namespace?: string;
-    args?: Parameters<FN>;
-    transfer?: (args: Parameters<FN>) => Transferable[];
+    transfer?: boolean | ((ctx: { args: Parameters<FN> }) => Transferable[]);
   } = {}) {
-    const { namespace = DEFAULT_NAMESPACE, args = [], transfer } = options;
+    const { namespace = DEFAULT_NAMESPACE, transfer } = options;
 
     const keyCallMap = this.#getKeyCallMap(namespace, true);
 
@@ -94,7 +99,11 @@ export class RpcAgent {
       type: "call",
       args,
     }, {
-      transfer: transfer?.(args as any),
+      transfer: transfer
+        ? transfer === true
+          ? getTransferables(args, supportFlags.streams)
+          : transfer?.({ args })
+        : undefined,
     });
 
     return ret;
@@ -182,7 +191,12 @@ export class RpcAgent {
             ok: true,
             ret,
           }, {
-            transfer: transfer && isTransferable(ret) ? [ret] : undefined,
+            // If the function is marked for transferring data, it uses `getTransferables` to grab none cloneable data,
+            // transferables exist due to them not being able to be cloned, so to ensure in a complex object we grab all the
+            // transferables that can't be cloned we traverse the entire object finding all transferables, and listing them to be transferred
+            transfer: transfer
+              ? getTransferables(ret, supportFlags.streams)
+              : undefined,
           });
         } catch (err) {
           this.#sendReturnMsg({
