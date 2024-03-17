@@ -9,6 +9,8 @@ const fns = {
   },
 };
 
-defineWorkerFns(fns);
+defineWorkerFns(fns, {
+  fib: { transfer: false },
+});
 
 export type Fns = typeof fns;

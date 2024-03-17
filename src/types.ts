@@ -22,14 +22,15 @@ export type InternalFns = {
 
 /* -------------------------------------------------- options -------------------------------------------------- */
 
-export interface DefineWorkerFnOpts {
+export interface DefineWorkerFnOpts<FN extends AnyFn> {
   /**
-   * Whether to transfer the transferable objects exist in the return value of the worker function.
+   * A boolean value indicating whether to transfer the transferable objects exist in the return value of the worker function,
+   * or a function that returns transferable objects should be transferred.
    *
    * @default true
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
    */
-  transfer?: boolean;
+  transfer?: boolean | ((ctx: { ret: ReturnType<FN> }) => Transferable[]);
 
   /**
    * The message port to communicate with the main thread.
@@ -45,10 +46,11 @@ export interface DefineWorkerFnOpts {
 
 export interface UseWorkerFnOpts<FN extends AnyFn> {
   /**
-   * A boolean value indicating whether to transfer the transferable objects exist in the arguments, or a function that returns transferable objects should be transferred.
+   * A boolean value indicating whether to transfer the transferable objects exist in the arguments,
+   * or a function that returns transferable objects should be transferred.
    *
+   * @default true
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
-   * @returns Transferable objects.
    */
   transfer?: boolean | ((ctx: { args: Parameters<FN> }) => Transferable[]);
 }

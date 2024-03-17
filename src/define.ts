@@ -15,10 +15,10 @@ const _global = Function("return this")() as MsgPortNormalized;
  * @param fn - The worker function.
  * @param options - An object containing options.
  */
-export function defineWorkerFn(
+export function defineWorkerFn<FN extends AnyFn>(
   name: string,
-  fn: AnyFn,
-  options: DefineWorkerFnOpts = {},
+  fn: FN,
+  options: DefineWorkerFnOpts<FN> = {},
 ): void {
   const { transfer, port = _global } = options;
   const rpcAgent = RpcAgent.getRpcAgent(port);
@@ -37,12 +37,14 @@ export function defineWorkerFn(
  * @param functions - An object containing worker functions. Keys will be used as the names of the worker functions.
  * @param options - An object containing options.
  */
-export function defineWorkerFns(
-  functions: Record<string, AnyFn>,
-  options: DefineWorkerFnOpts = {},
+export function defineWorkerFns<FNS extends Record<string, AnyFn>>(
+  functions: FNS,
+  options: {
+    [NAME in keyof FNS]?: DefineWorkerFnOpts<FNS[NAME]>;
+  } = {},
 ): void {
   for (const [name, fn] of Object.entries(functions)) {
-    defineWorkerFn(name, fn, options);
+    defineWorkerFn(name, fn, options[name]);
   }
 }
 

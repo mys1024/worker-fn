@@ -31,7 +31,7 @@ export class RpcAgent {
     string,
     Map<string, {
       fn: AnyFn;
-      transfer: boolean;
+      transfer: boolean | ((ctx: { ret: any }) => Transferable[]);
     }>
   >();
 
@@ -62,9 +62,9 @@ export class RpcAgent {
     this.#startListening();
   }
 
-  defineLocalFn(name: string, fn: AnyFn, options: {
+  defineLocalFn<FN extends AnyFn>(name: string, fn: FN, options: {
     namespace?: string;
-    transfer?: boolean;
+    transfer?: boolean | ((ctx: { ret: ReturnType<FN> }) => Transferable[]);
   } = {}) {
     const { namespace = DEFAULT_NAMESPACE, transfer = true } = options;
 
@@ -83,7 +83,7 @@ export class RpcAgent {
     namespace?: string;
     transfer?: boolean | ((ctx: { args: Parameters<FN> }) => Transferable[]);
   } = {}) {
-    const { namespace = DEFAULT_NAMESPACE, transfer } = options;
+    const { namespace = DEFAULT_NAMESPACE, transfer = true } = options;
 
     const keyCallMap = this.#getKeyCallMap(namespace, true);
 
@@ -195,7 +195,9 @@ export class RpcAgent {
             // transferables exist due to them not being able to be cloned, so to ensure in a complex object we grab all the
             // transferables that can't be cloned we traverse the entire object finding all transferables, and listing them to be transferred
             transfer: transfer
-              ? getTransferables(ret, supportFlags.streams)
+              ? transfer === true
+                ? getTransferables(ret, supportFlags.streams)
+                : transfer?.({ ret })
               : undefined,
           });
         } catch (err) {
