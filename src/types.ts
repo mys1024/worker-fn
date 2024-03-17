@@ -24,7 +24,7 @@ export type InternalFns = {
 
 export interface DefineWorkerFnOpts {
   /**
-   * Whether to transfer the return value of worker function if it is of type `Transferable`.
+   * Whether to transfer the transferable objects exist in the return value of the worker function.
    *
    * @default true
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
@@ -45,7 +45,7 @@ export interface DefineWorkerFnOpts {
 
 export interface UseWorkerFnOpts<FN extends AnyFn> {
   /**
-   * A boolean value indicating whether to transfer the arguments, or a function that returns transferable objects should be transferred.
+   * A boolean value indicating whether to transfer the transferable objects exist in the arguments, or a function that returns transferable objects should be transferred.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Worker/postMessage#transfer
    * @returns Transferable objects.
