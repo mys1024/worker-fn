@@ -2,14 +2,14 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "jsr:@okikio/transferables@^1.0.1": "jsr:@okikio/transferables@1.0.1",
+      "jsr:@okikio/transferables@^1.0.2": "jsr:@okikio/transferables@1.0.2",
       "jsr:@std/assert@0.217": "jsr:@std/assert@0.217.0",
       "jsr:@std/fmt@^0.217.0": "jsr:@std/fmt@0.217.0",
       "npm:@types/node": "npm:@types/node@18.16.19"
     },
     "jsr": {
-      "@okikio/transferables@1.0.1": {
-        "integrity": "90051c61464a13a5e09db2f0bae3190fde294da93839563bd3ad8047ba190b10"
+      "@okikio/transferables@1.0.2": {
+        "integrity": "46a80015a1c4672b0b246e38838b3ea1e2edc6c775a235184a2f8eb49a8314f7"
       },
       "@std/assert@0.217.0": {
         "integrity": "c98e279362ca6982d5285c3b89517b757c1e3477ee9f14eb2fdf80a45aaa9642",
@@ -31,7 +31,7 @@
   "remote": {},
   "workspace": {
     "dependencies": [
-      "jsr:@okikio/transferables@^1.0.1",
+      "jsr:@okikio/transferables@^1.0.2",
       "jsr:@std/assert@0.217"
     ]
   }
