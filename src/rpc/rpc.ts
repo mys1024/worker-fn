@@ -20,16 +20,7 @@ let supportFlags: Awaited<ReturnType<typeof isSupported>> = {
   streams: false,
   channel: false,
 };
-(async () => {
-  await new Promise<void>((resolve) => {
-    isSupported()
-      .then((res) => (supportFlags = res, resolve()));
-
-    // Just in-case some runtime takes longer that we want to confirm support for streams and/or channels
-    // The `isSupported` function is supposed to be fairly fast, but just in-case it isn't we set a 3sec cutoff
-    setTimeout(() => resolve(), 3000);
-  });
-})();
+isSupported().then((res) => (supportFlags = res));
 
 export class RpcAgent {
   #msgPort: MsgPortNormalized;
