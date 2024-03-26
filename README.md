@@ -85,8 +85,8 @@ function fib(n) {
   return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
 }
 
-defineWorkerFn("add", add, { port: parentPort! });
-defineWorkerFn("fib", fib, { port: parentPort! });
+defineWorkerFn("add", add, { port: parentPort });
+defineWorkerFn("fib", fib, { port: parentPort });
 ```
 
 `math.js`:
@@ -118,10 +118,10 @@ console.log(await fib(5)); // 5
 import { defineWorkerFns } from "worker-fn";
 
 const fns = {
-  add(a: number, b: number) {
+  add(a, b) {
     return a + b;
   },
-  fib(n: number): number {
+  fib(n) {
     return n <= 2 ? 1 : fns.fib(n - 1) + fns.fib(n - 2);
   },
 };
