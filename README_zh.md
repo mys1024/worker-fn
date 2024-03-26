@@ -30,6 +30,126 @@ Promise 中），代理函数会通过消息事件调用定义在 Worker 中的�
 
 ### 基本使用
 
+`math.worker.js`:
+
+```javascript
+import { defineWorkerFn } from "worker-fn";
+
+function add(a, b) {
+  return a + b;
+}
+
+function fib(n) {
+  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
+}
+
+defineWorkerFn("add", add);
+defineWorkerFn("fib", fib);
+```
+
+`math.js`:
+
+```javascript
+import { useWorkerFn } from "worker-fn";
+
+const worker = new Worker(new URL("./math.worker.js", import.meta.url), {
+  type: "module",
+});
+
+const add = useWorkerFn("add", worker);
+const fib = useWorkerFn("fib", worker);
+
+console.log(await add(1, 2)); // 3
+console.log(await fib(5)); // 5
+```
+
+### 在 Node.js 中配合 `node:worker_threads` 使用
+
+<details>
+
+<summary>Example</summary>
+
+`math.worker.js`:
+
+```javascript
+import { parentPort } from "node:worker_threads";
+import { defineWorkerFn } from "worker-fn";
+
+function add(a, b) {
+  return a + b;
+}
+
+function fib(n) {
+  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
+}
+
+defineWorkerFn("add", add, { port: parentPort! });
+defineWorkerFn("fib", fib, { port: parentPort! });
+```
+
+`math.js`:
+
+```javascript
+import { Worker } from "node:worker_threads";
+import { useWorkerFn } from "worker-fn";
+
+const worker = new Worker(new URL("./math.worker.js", import.meta.url));
+
+const add = useWorkerFn("add", worker);
+const fib = useWorkerFn("fib", worker);
+
+console.log(await add(1, 2)); // 3
+console.log(await fib(5)); // 5
+```
+
+</details>
+
+### 使用 `defineWorkerFns()` 和 `useWorkerFns()`
+
+<details>
+
+<summary>Example</summary>
+
+`math.worker.js`:
+
+```javascript
+import { defineWorkerFns } from "worker-fn";
+
+const fns = {
+  add(a: number, b: number) {
+    return a + b;
+  },
+  fib(n: number): number {
+    return n <= 2 ? 1 : fns.fib(n - 1) + fns.fib(n - 2);
+  },
+};
+
+defineWorkerFns(fns);
+```
+
+`math.js`:
+
+```javascript
+import { useWorkerFns } from "worker-fn";
+
+const worker = new Worker(new URL("./math.worker.js", import.meta.url), {
+  type: "module",
+});
+
+const { add, fib } = useWorkerFns(worker);
+
+console.log(await add(1, 2)); // 3
+console.log(await fib(5)); // 5
+```
+
+</details>
+
+### 使用 TypeScript
+
+<details>
+
+<summary>Example</summary>
+
 `math.worker.ts`:
 
 ```typescript
@@ -62,92 +182,6 @@ const worker = new Worker(new URL("./math.worker.ts", import.meta.url), {
 
 const add = useWorkerFn<Add>("add", worker);
 const fib = useWorkerFn<Fib>("fib", worker);
-
-console.log(await add(1, 2)); // 3
-console.log(await fib(5)); // 5
-```
-
-### 在 Node.js 中配合 `node:worker_threads` 使用
-
-<details>
-
-<summary>例子</summary>
-
-`math.worker.ts`:
-
-```typescript
-import { parentPort } from "node:worker_threads";
-import { defineWorkerFn } from "worker-fn";
-
-function add(a: number, b: number) {
-  return a + b;
-}
-
-function fib(n: number): number {
-  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
-}
-
-defineWorkerFn("add", add, { port: parentPort! });
-defineWorkerFn("fib", fib, { port: parentPort! });
-
-export type Add = typeof add;
-export type Fib = typeof fib;
-```
-
-`math.ts`:
-
-```typescript
-import { Worker } from "node:worker_threads";
-import { useWorkerFn } from "worker-fn";
-import type { Add, Fib } from "./math.worker.ts";
-
-const worker = new Worker(new URL("./math.worker.ts", import.meta.url));
-
-const add = useWorkerFn<Add>("add", worker);
-const fib = useWorkerFn<Fib>("fib", worker);
-
-console.log(await add(1, 2)); // 3
-console.log(await fib(5)); // 5
-```
-
-</details>
-
-### 使用 `defineWorkerFns()` 和 `useWorkerFns()`
-
-<details>
-
-<summary>例子</summary>
-
-`math.worker.ts`:
-
-```typescript
-import { defineWorkerFns } from "worker-fn";
-
-const fns = {
-  add(a: number, b: number) {
-    return a + b;
-  },
-  fib(n: number): number {
-    return n <= 2 ? 1 : fns.fib(n - 1) + fns.fib(n - 2);
-  },
-};
-
-defineWorkerFns(fns);
-
-export type Fns = typeof fns;
-```
-
-`math.ts`:
-
-```typescript
-import { useWorkerFns } from "worker-fn";
-import type { Fns } from "./math.worker.ts";
-
-const worker = new Worker(new URL("./math.worker.ts", import.meta.url), {
-  type: "module",
-});
-
-const { add, fib } = useWorkerFns<Fns>(worker);
 
 console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5
