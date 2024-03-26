@@ -5,5 +5,11 @@ node_modules
 .idea/
 *.log
 .env
-coverage
 __snapshots__
+
+coverage
+cov.lcov
+
+/npm/src
+/npm/README.md
+/npm/LICENSE

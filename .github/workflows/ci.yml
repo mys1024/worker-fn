@@ -9,52 +9,8 @@ on:
       - main
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        # deno-version: [vx.x.x]
-        deno-version: [v1.41.0]
-        os: [ubuntu-latest, windows-latest]
-      fail-fast: false
-
-    name: Test on Deno ${{ matrix.deno-version }}, ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: ${{ matrix.deno-version }}
-
-      - name: Test
-        run: deno task test:cov
-
-  npm-trial-build:
-    name: npm trial build
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Prepare files
-        run: mv npm/* .
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          registry-url: 'https://registry.npmjs.org'
-          cache: pnpm
-
-      - name: Install
-        run: pnpm install
-
-      - name: Build
-        run: pnpm run build
+  ci:
+    uses: ./.github/workflows/.common.yml
+    secrets: inherit
+    with:
+      is-release: false

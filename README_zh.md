@@ -2,12 +2,13 @@
 
 # worker-fn
 
-[![jsr-version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjsr.io%2F%40mys%2Fworker-fn%2Fmeta.json&query=%24.latest&style=flat-square&label=jsr&color=rgb(247%2C223%2C30))](https://jsr.io/@mys/worker-fn)
-[![npm-version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=rgb(203%2C56%2C55))](https://www.npmjs.com/package/worker-fn)
-[![npm-downloads](https://img.shields.io/npm/dy/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
+[![jsr-version](https://img.shields.io/jsr/v/@mys/worker-fn?style=flat-square&color=%23f7df1e)](https://jsr.io/@mys/worker-fn)
+[![npm-version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=%23cb3837)](https://www.npmjs.com/package/worker-fn)
 [![npm-minzip](https://img.shields.io/bundlephobia/minzip/worker-fn?style=flat-square&label=minzip)](https://bundlephobia.com/package/worker-fn)
 [![docs](https://img.shields.io/badge/docs-reference-blue?style=flat-square)](https://jsr.io/@mys/worker-fn/doc?style=flat-square)
-[![license](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)<br/>
+[![stars](https://img.shields.io/github/stars/mys1024/worker-fn?style=flat-square)](https://github.com/mys1024/worker-fn)
+[![license](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)
+
 [![workflow-ci](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/ci.yml?label=ci&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
 [![workflow-release](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/release.yml?label=release&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/release.yml)
 
@@ -15,9 +16,13 @@
 
 </div>
 
-`worker-fn` 隐藏了 JavaScript 主线程与 [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) 线程之间的通信的复杂性，可以让你方便地调用定义在 Worker 中的函数。
+`worker-fn` 隐藏了 JavaScript 主线程与
+[Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API)
+线程之间的通信的复杂性，可以让你方便地调用定义在 Worker 中的函数。
 
-你可以通过 `worker-fn` 在 JavaScript 主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值会被包裹在 Promise 中），代理函数会通过消息事件调用定义在 Worker 中的对应的工作函数。
+你可以通过 `worker-fn` 在 JavaScript
+主线程中创建函数签名与**工作函数**一致的**代理函数**（除了代理函数的返回值会被包裹在
+Promise 中），代理函数会通过消息事件调用定义在 Worker 中的对应的工作函数。
 
 ![concepts](./docs/concepts.png)
 
@@ -152,8 +157,11 @@ console.log(await fib(5)); // 5
 
 ## 从 JSR 导入
 
-`worker-fn` 同时发布在 [npm](https://www.npmjs.com/package/worker-fn) 和 [JSR](https://jsr.io/@mys/worker-fn) 上。如果你想从 JSR 导入 `worker-fn`，请参考[这篇文档](https://jsr.io/docs/introduction#using-jsr-packages)。
+`worker-fn` 同时发布在 [npm](https://www.npmjs.com/package/worker-fn) 和
+[JSR](https://jsr.io/@mys/worker-fn) 上。如果你想从 JSR 导入
+`worker-fn`，请参考[这篇文档](https://jsr.io/docs/introduction#using-jsr-packages)。
 
 ## License
 
-[MIT](./LICENSE) License &copy; 2024-PRESENT [mys1024](https://github.com/mys1024)
+[MIT](./LICENSE) License &copy; 2024-PRESENT
+[mys1024](https://github.com/mys1024)

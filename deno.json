@@ -4,13 +4,13 @@
   "tasks": {
     "run": "deno run src/main.ts",
     "run:watch": "deno run --watch src/main.ts",
-    "cache": "deno cache --lock-write src/main.ts test/**/*.test.ts",
-    "cache:reload": "deno cache --reload src/main.ts test/**/*.test.ts",
+    "cache": "deno cache --lock-write src/**/*.ts test/**/*.ts",
+    "cache:reload": "deno cache --lock-write --reload src/**/*.ts test/**/*.ts",
+    "check": "deno check src/**/*.ts test/**/*.ts && deno lint && deno fmt --check",
     "test": "deno test -A",
     "test:watch": "deno test -A --watch",
-    "test:cov": "deno test -A --coverage && deno coverage && deno coverage --html",
-    "bump": "deno run -A jsr:@mys/bump@1",
-    "publish": "deno publish"
+    "test:lcov": "deno test -A --coverage && deno coverage --lcov --output=cov.lcov",
+    "bump": "deno task check && deno task test && deno publish --dry-run && pnpm i -C npm && pnpm run -C npm build && pnpm publish -C npm --no-git-checks --dry-run && pnpm run -C npm clean && echo && echo ✅ Checks passed, start bumping... && echo && deno run -A jsr:@mys/bump@1"
   },
   "imports": {
     "@okikio/transferables": "jsr:@okikio/transferables@^1.0.2",
@@ -23,16 +23,25 @@
     "include": [
       "src",
       "docs/concepts.png",
+      "deno.json",
+      "deno.jsonc",
       "README*.md",
-      "LICENSE",
-      "deno.json"
+      "LICENSE"
     ]
   },
   "lint": {
+    "exclude": [
+      "npm"
+    ],
     "rules": {
       "exclude": [
         "no-explicit-any"
       ]
     }
+  },
+  "fmt": {
+    "exclude": [
+      "npm"
+    ]
   }
 }

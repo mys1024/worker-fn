@@ -2,12 +2,13 @@
 
 # worker-fn
 
-[![jsr-version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjsr.io%2F%40mys%2Fworker-fn%2Fmeta.json&query=%24.latest&style=flat-square&label=jsr&color=rgb(247%2C223%2C30))](https://jsr.io/@mys/worker-fn)
-[![npm-version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=rgb(203%2C56%2C55))](https://www.npmjs.com/package/worker-fn)
-[![npm-downloads](https://img.shields.io/npm/dy/worker-fn?&style=flat-square)](https://www.npmjs.com/package/worker-fn)
+[![jsr-version](https://img.shields.io/jsr/v/@mys/worker-fn?style=flat-square&color=%23f7df1e)](https://jsr.io/@mys/worker-fn)
+[![npm-version](https://img.shields.io/npm/v/worker-fn?style=flat-square&color=%23cb3837)](https://www.npmjs.com/package/worker-fn)
 [![npm-minzip](https://img.shields.io/bundlephobia/minzip/worker-fn?style=flat-square&label=minzip)](https://bundlephobia.com/package/worker-fn)
 [![docs](https://img.shields.io/badge/docs-reference-blue?style=flat-square)](https://jsr.io/@mys/worker-fn/doc?style=flat-square)
-[![license](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)<br/>
+[![stars](https://img.shields.io/github/stars/mys1024/worker-fn?style=flat-square)](https://github.com/mys1024/worker-fn)
+[![license](https://img.shields.io/github/license/mys1024/worker-fn?&style=flat-square)](./LICENSE)
+
 [![workflow-ci](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/ci.yml?label=ci&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/ci.yml)
 [![workflow-release](https://img.shields.io/github/actions/workflow/status/mys1024/worker-fn/release.yml?label=release&style=flat-square)](https://github.com/mys1024/worker-fn/actions/workflows/release.yml)
 
@@ -15,9 +16,15 @@ English | [中文文档](./README_zh.md)
 
 </div>
 
-`worker-fn` hides the complexity of communication between the JavaScript main thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API) threads, making it easy to call the functions defined in workers.
+`worker-fn` hides the complexity of communication between the JavaScript main
+thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API)
+threads, making it easy to call the functions defined in workers.
 
-`worker-fn` allows you to create **proxy functions** in the main thread that call the corresponding **worker functions** defined in Worker threads through message events. Proxy functions have the same function signatures as the corresponding worker functions (except that the return values of proxy functions will be wrapped in Promises).
+`worker-fn` allows you to create **proxy functions** in the main thread that
+call the corresponding **worker functions** defined in Worker threads through
+message events. Proxy functions have the same function signatures as the
+corresponding worker functions (except that the return values of proxy functions
+will be wrapped in Promises).
 
 ![concepts](./docs/concepts.png)
 
@@ -152,8 +159,12 @@ console.log(await fib(5)); // 5
 
 ## Importing from JSR
 
-`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn) and [JSR](https://jsr.io/@mys/worker-fn). If you want to import `worker-fn` from JSR, please refer to [this document](https://jsr.io/docs/introduction#using-jsr-packages).
+`worker-fn` is published on both [npm](https://www.npmjs.com/package/worker-fn)
+and [JSR](https://jsr.io/@mys/worker-fn). If you want to import `worker-fn` from
+JSR, please refer to
+[this document](https://jsr.io/docs/introduction#using-jsr-packages).
 
 ## License
 
-[MIT](./LICENSE) License &copy; 2024-PRESENT [mys1024](https://github.com/mys1024)
+[MIT](./LICENSE) License &copy; 2024-PRESENT
+[mys1024](https://github.com/mys1024)

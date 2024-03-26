@@ -1,0 +1,129 @@
+name: Common
+
+on:
+  workflow_call:
+    inputs:
+      is-release:
+        required: true
+        type: boolean
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        deno-version:
+          - v1.41.0
+        os:
+          - ubuntu-latest
+          - windows-latest
+    name: Test on deno-${{ matrix.deno-version }}, ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      DENO_DIR: /home/runner/cache/deno
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Deno dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.DENO_DIR }}
+          key: ${{ matrix.os }}-${{ hashFiles('deno.lock') }}
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno-version }}
+
+      - name: Check
+        run: deno task check
+
+      - name: Test
+        run: deno task test:lcov
+
+      # # If you don't need to upload the coverage reports, please remove this step.
+      # - name: Upload coverage reports to Codecov
+      #   if: matrix.os == 'ubuntu-latest'
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: cov.lcov
+
+  changelog:
+    needs: test
+    if: inputs.is-release
+    name: Changelog
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Changelog
+        run: deno run -A npm:changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # If you don't want to publish this package to JSR, please remove this job.
+  publish-to-jsr:
+    needs: test
+    name: Publish to JSR (${{ inputs.is-release && 'real' || 'dry-run' }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Publish (${{ inputs.is-release && 'real' || 'dry-run' }})
+        run: deno publish ${{ inputs.is-release && ' ' || '--dry-run' }}
+
+  # If you don't need to publish this package to npm, please remove this job.
+  publish-to-npm:
+    needs: test
+    name: Publish to npm (${{ inputs.is-release && 'real' || 'dry-run' }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          package_json_file: npm/package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          cache-dependency-path: npm/pnpm-lock.yaml
+          cache: pnpm
+
+      - name: Install
+        run: pnpm i -C npm
+
+      - name: Build
+        run: pnpm run -C npm build
+
+      - name: Publish (${{ inputs.is-release && 'real' || 'dry-run' }})
+        run: pnpm publish -C npm --no-git-checks --provenance --access public ${{ inputs.is-release && ' ' || '--dry-run' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,10 +1,10 @@
 {
   "name": "worker-fn",
-  "version": "",
+  "version": "0.0.0",
   "description": "worker-fn hides the complexity of communication between the JavaScript main thread and Worker threads, making it easy to call the functions defined in workers.",
   "type": "module",
   "author": "mys1024",
-  "packageManager": "pnpm@8.15.4",
+  "packageManager": "pnpm@8.15.5",
   "license": "MIT",
   "homepage": "https://github.com/mys1024/worker-fn#readme",
   "repository": {
@@ -27,17 +27,19 @@
     "dist"
   ],
   "scripts": {
-    "version": "node scripts/version.js",
-    "build": "npx tsup src/main.ts --clean --dts --format esm"
+    "prepare": "node scripts/prepare.js",
+    "clean": "node scripts/clean.js",
+    "build": "pnpm run prepare && tsup src/main.ts --format cjs,esm --dts",
+    "build:clean": "pnpm run build && pnpm run clean"
   },
   "main": "./dist/main.js",
   "module": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/main.d.ts",
       "import": "./dist/main.js",
-      "require": "./dist/main.js"
+      "require": "./dist/main.cjs",
+      "types": "./dist/main.d.ts"
     }
   },
   "devDependencies": {
