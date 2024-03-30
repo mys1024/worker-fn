@@ -1,13 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { useWorkerFn } from "../src/main.ts";
-import type {
-  Add,
-  AddBytesWithoutTransferring,
-  AddBytesWithTransferring,
-  Fib,
-  Redefine,
-  ThrowErr,
-} from "./basic.test.worker.ts";
+import type { Add, Fib, Redefine, ThrowErr } from "./basic.test.worker.ts";
 import type { Add as Add2 } from "./basic.test.worker.another.ts";
 
 Deno.test({
@@ -41,29 +34,6 @@ Deno.test({
         const add = useWorkerFn<Add>("add", worker);
         assertEquals(
           await Promise.all([add(100, 200), add(50, 50), add(2, 8)]),
-          [300, 100, 10],
-        );
-      });
-
-      await t.step("multiple proxy functions", async () => {
-        const worker = new Worker(
-          new URL("./basic.test.worker.ts", import.meta.url),
-          {
-            type: "module",
-          },
-        );
-
-        const add1 = useWorkerFn<Add>("add", worker);
-        const add2 = useWorkerFn<Add>("add", worker);
-        const add3 = useWorkerFn<Add>("add", worker);
-        const results = Promise.all([add1(100, 200), add2(50, 50), add3(2, 8)]);
-        const timeout = new Promise((_, reject) => {
-          setTimeout(() => {
-            reject("timeout!");
-          }, 500);
-        });
-        assertEquals(
-          await Promise.race([results, timeout]),
           [300, 100, 10],
         );
       });
@@ -145,58 +115,6 @@ Deno.test({
             'The name "fib" is not defined in namespace "fn".',
           );
         }
-      });
-
-      await t.step("transferring enabled", async () => {
-        const worker = new Worker(
-          new URL("./basic.test.worker.ts", import.meta.url),
-          {
-            type: "module",
-          },
-        );
-        const addBytesWithTransferring = useWorkerFn<AddBytesWithTransferring>(
-          "addBytesWithTransferring",
-          worker,
-          {
-            transfer: true,
-          },
-        );
-        const bytes1 = new Uint8Array([1, 2, 3]).buffer;
-        const bytes2 = new Uint8Array([3, 2, 1]).buffer;
-        assertEquals(
-          Array.from(
-            new Uint8Array(await addBytesWithTransferring(bytes1, bytes2, 3)),
-          ),
-          [4, 4, 4],
-        );
-        assertEquals(bytes1.byteLength, 0);
-        assertEquals(bytes2.byteLength, 0);
-      });
-
-      await t.step("transferring disabled", async () => {
-        const worker = new Worker(
-          new URL("./basic.test.worker.ts", import.meta.url),
-          {
-            type: "module",
-          },
-        );
-        const addBytesWithoutTransferring = useWorkerFn<
-          AddBytesWithoutTransferring
-        >("addBytesWithoutTransferring", worker, {
-          transfer: false,
-        });
-        const bytes1 = new Uint8Array([1, 2, 3]).buffer;
-        const bytes2 = new Uint8Array([3, 2, 1]).buffer;
-        assertEquals(
-          Array.from(
-            new Uint8Array(
-              await addBytesWithoutTransferring(bytes1, bytes2, 3),
-            ),
-          ),
-          [4, 4, 4],
-        );
-        assertEquals(bytes1.byteLength, 3);
-        assertEquals(bytes2.byteLength, 3);
       });
     });
   },

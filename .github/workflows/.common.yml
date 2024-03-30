@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         deno-version:
-          - v1.41.0
+          - v1.x
         os:
           - ubuntu-latest
           - windows-latest
