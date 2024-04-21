@@ -4,10 +4,10 @@ import type { AnyFn, CallOptions, ProxyFn, ProxyFns } from "./types.ts";
 /* -------------------------------------------------- useWorkerFn() -------------------------------------------------- */
 
 /**
- * Invoke this function in the main thread to create a proxy function that calls the corresponding worker function.
+ * Create a proxy function that calls the corresponding worker function.
  *
  * @param name - The name that identifies the worker function.
- * @param worker - A Worker instance.
+ * @param worker - A worker instance.
  * @param options - An object containing options.
  * @returns The proxy function.
  */
@@ -39,11 +39,11 @@ export function useWorkerFn<FN extends AnyFn>(
 /* -------------------------------------------------- useWorkerFns() -------------------------------------------------- */
 
 /**
- * Invoke this function in the main thread to create proxy functions of all worker functions.
+ * Create the proxy functions of all worker functions.
  *
- * @param worker - A Worker instance.
+ * @param worker - A worker instance.
  * @param options - An object containing options.
- * @returns Proxy functions.
+ * @returns The proxy functions.
  */
 export function useWorkerFns<FNS extends Record<string, AnyFn>>(
   worker: Worker | NodeWorkerOrNodeMessagePort,

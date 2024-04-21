@@ -21,10 +21,10 @@ thread and [Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API)
 threads, making it easy to call the functions defined in workers.
 
 `worker-fn` allows you to create **proxy functions** in the main thread that
-call the corresponding **worker functions** defined in Worker threads through
-message events. Proxy functions have the same function signatures as the
-corresponding worker functions (except that the return values of proxy functions
-will be wrapped in Promises).
+call corresponding **worker functions** defined in worker threads by sending
+messages. These proxy functions maintain the same function signatures as the
+corresponding worker functions (except that the return values of the proxy
+functions are wrapped in Promises).
 
 ![concepts](./docs/concepts.png)
 
@@ -64,47 +64,6 @@ const fib = useWorkerFn("fib", worker);
 console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5
 ```
-
-### Using in Node.js with `node:worker_threads`
-
-<details>
-
-<summary>Example</summary>
-
-`math.worker.js`:
-
-```javascript
-import { parentPort } from "node:worker_threads";
-import { defineWorkerFn } from "worker-fn";
-
-function add(a, b) {
-  return a + b;
-}
-
-function fib(n) {
-  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
-}
-
-defineWorkerFn("add", add, { port: parentPort });
-defineWorkerFn("fib", fib, { port: parentPort });
-```
-
-`math.js`:
-
-```javascript
-import { Worker } from "node:worker_threads";
-import { useWorkerFn } from "worker-fn";
-
-const worker = new Worker(new URL("./math.worker.js", import.meta.url));
-
-const add = useWorkerFn("add", worker);
-const fib = useWorkerFn("fib", worker);
-
-console.log(await add(1, 2)); // 3
-console.log(await fib(5)); // 5
-```
-
-</details>
 
 ### Using `defineWorkerFns()` and `useWorkerFns()`
 
@@ -184,6 +143,47 @@ const worker = new Worker(new URL("./math.worker.ts", import.meta.url), {
 
 const add = useWorkerFn<Add>("add", worker);
 const fib = useWorkerFn<Fib>("fib", worker);
+
+console.log(await add(1, 2)); // 3
+console.log(await fib(5)); // 5
+```
+
+</details>
+
+### Using in Node.js with `node:worker_threads`
+
+<details>
+
+<summary>Example</summary>
+
+`math.worker.js`:
+
+```javascript
+import { parentPort } from "node:worker_threads";
+import { defineWorkerFn } from "worker-fn";
+
+function add(a, b) {
+  return a + b;
+}
+
+function fib(n) {
+  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
+}
+
+defineWorkerFn("add", add, { port: parentPort });
+defineWorkerFn("fib", fib, { port: parentPort });
+```
+
+`math.js`:
+
+```javascript
+import { Worker } from "node:worker_threads";
+import { useWorkerFn } from "worker-fn";
+
+const worker = new Worker(new URL("./math.worker.js", import.meta.url));
+
+const add = useWorkerFn("add", worker);
+const fib = useWorkerFn("fib", worker);
 
 console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5

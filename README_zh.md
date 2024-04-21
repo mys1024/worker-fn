@@ -63,47 +63,6 @@ console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5
 ```
 
-### 在 Node.js 中配合 `node:worker_threads` 使用
-
-<details>
-
-<summary>Example</summary>
-
-`math.worker.js`:
-
-```javascript
-import { parentPort } from "node:worker_threads";
-import { defineWorkerFn } from "worker-fn";
-
-function add(a, b) {
-  return a + b;
-}
-
-function fib(n) {
-  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
-}
-
-defineWorkerFn("add", add, { port: parentPort });
-defineWorkerFn("fib", fib, { port: parentPort });
-```
-
-`math.js`:
-
-```javascript
-import { Worker } from "node:worker_threads";
-import { useWorkerFn } from "worker-fn";
-
-const worker = new Worker(new URL("./math.worker.js", import.meta.url));
-
-const add = useWorkerFn("add", worker);
-const fib = useWorkerFn("fib", worker);
-
-console.log(await add(1, 2)); // 3
-console.log(await fib(5)); // 5
-```
-
-</details>
-
 ### 使用 `defineWorkerFns()` 和 `useWorkerFns()`
 
 <details>
@@ -182,6 +141,47 @@ const worker = new Worker(new URL("./math.worker.ts", import.meta.url), {
 
 const add = useWorkerFn<Add>("add", worker);
 const fib = useWorkerFn<Fib>("fib", worker);
+
+console.log(await add(1, 2)); // 3
+console.log(await fib(5)); // 5
+```
+
+</details>
+
+### 在 Node.js 中搭配 `node:worker_threads` 使用
+
+<details>
+
+<summary>Example</summary>
+
+`math.worker.js`:
+
+```javascript
+import { parentPort } from "node:worker_threads";
+import { defineWorkerFn } from "worker-fn";
+
+function add(a, b) {
+  return a + b;
+}
+
+function fib(n) {
+  return n <= 2 ? 1 : fib(n - 1) + fib(n - 2);
+}
+
+defineWorkerFn("add", add, { port: parentPort });
+defineWorkerFn("fib", fib, { port: parentPort });
+```
+
+`math.js`:
+
+```javascript
+import { Worker } from "node:worker_threads";
+import { useWorkerFn } from "worker-fn";
+
+const worker = new Worker(new URL("./math.worker.js", import.meta.url));
+
+const add = useWorkerFn("add", worker);
+const fib = useWorkerFn("fib", worker);
 
 console.log(await add(1, 2)); // 3
 console.log(await fib(5)); // 5

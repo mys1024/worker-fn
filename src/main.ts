@@ -3,5 +3,8 @@
  * making it easy to call the functions defined in workers.
  */
 
+export type { CallOptions, DefineOptions } from "./types.ts";
+
 export { defineWorkerFn, defineWorkerFns } from "./define.ts";
+
 export { inspectWorker, useWorkerFn, useWorkerFns } from "./use.ts";

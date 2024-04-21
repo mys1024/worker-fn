@@ -1,10 +1,10 @@
-import { MRpc } from "@mys/m-rpc";
-import type { AnyFn, DefineOptions, WorkerGlobalScope } from "./types.ts";
+import { MRpc, type WorkerGlobalScope } from "@mys/m-rpc";
+import type { AnyFn, DefineOptions } from "./types.ts";
 
 /* -------------------------------------------------- defineWorkerFn() -------------------------------------------------- */
 
 /**
- * Invoke this function in worker threads to define a worker function.
+ * Define a worker function.
  *
  * @param name - A name that identifies the worker function.
  * @param fn - The worker function.
@@ -26,18 +26,18 @@ export function defineWorkerFn<FN extends AnyFn>(
 /* -------------------------------------------------- defineWorkerFns() -------------------------------------------------- */
 
 /**
- * Invoke this function in worker threads to define worker functions.
+ * Define worker functions.
  *
- * @param functions - An object containing worker functions. Keys will be used as the names of the worker functions.
+ * @param fns - An object containing worker functions. Keys will be used as the names of the worker functions.
  * @param options - An object containing options.
  */
 export function defineWorkerFns<FNS extends Record<string, AnyFn>>(
-  functions: FNS,
+  fns: FNS,
   options: {
     [NAME in keyof FNS]?: DefineOptions<FNS[NAME]>;
   } = {},
 ): void {
-  for (const [name, fn] of Object.entries(functions)) {
+  for (const [name, fn] of Object.entries(fns)) {
     defineWorkerFn(name, fn, options[name]);
   }
 }
