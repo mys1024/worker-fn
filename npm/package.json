@@ -4,7 +4,7 @@
   "description": "worker-fn hides the complexity of communication between the JavaScript main thread and Worker threads, making it easy to call the functions defined in workers.",
   "type": "module",
   "author": "mys1024",
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "pnpm@9.0.4",
   "license": "MIT",
   "homepage": "https://github.com/mys1024/worker-fn#readme",
   "repository": {
@@ -48,6 +48,6 @@
   "devDependencies": {
     "@okikio/transferables": "npm:@jsr/okikio__transferables@^1.0.2",
     "tsup": "^8.0.2",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   }
 }
