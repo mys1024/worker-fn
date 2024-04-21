@@ -67,7 +67,7 @@ console.log(await fib(5)); // 5
 
 <details>
 
-<summary>Example</summary>
+<summary>例子</summary>
 
 `math.worker.js`:
 
@@ -107,7 +107,7 @@ console.log(await fib(5)); // 5
 
 <details>
 
-<summary>Example</summary>
+<summary>例子</summary>
 
 `math.worker.ts`:
 
@@ -152,7 +152,7 @@ console.log(await fib(5)); // 5
 
 <details>
 
-<summary>Example</summary>
+<summary>例子</summary>
 
 `math.worker.js`:
 
