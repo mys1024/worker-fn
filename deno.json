@@ -14,7 +14,7 @@
     "bump": "deno task check:all && deno run -A jsr:@mys/bump@1"
   },
   "imports": {
-    "@mys/m-rpc": "jsr:@mys/m-rpc@^0.12.1",
+    "@mys-x/m-rpc": "jsr:@mys/m-rpc@^0.12.1",
     "@okikio/transferables": "jsr:@okikio/transferables@^1.0.2",
     "@std/assert": "jsr:@std/assert@0.217"
   },

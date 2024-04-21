@@ -1,4 +1,4 @@
-import { MRpc, type NodeWorkerOrNodeMessagePort } from "@mys/m-rpc";
+import { MRpc, type NodeWorkerOrNodeMessagePort } from "@mys-x/m-rpc";
 import type { AnyFn, CallOptions, ProxyFn, ProxyFns } from "./types.ts";
 
 /* -------------------------------------------------- useWorkerFn() -------------------------------------------------- */

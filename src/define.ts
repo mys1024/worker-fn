@@ -1,4 +1,4 @@
-import { MRpc, type WorkerGlobalScope } from "@mys/m-rpc";
+import { MRpc, type WorkerGlobalScope } from "@mys-x/m-rpc";
 import type { AnyFn, DefineOptions } from "./types.ts";
 
 /* -------------------------------------------------- defineWorkerFn() -------------------------------------------------- */

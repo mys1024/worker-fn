@@ -5,7 +5,7 @@ import type {
   RemoteFn,
   RemoteFns,
   WorkerGlobalScope,
-} from "@mys/m-rpc";
+} from "@mys-x/m-rpc";
 
 /* -------------------------------------------------- common -------------------------------------------------- */
 

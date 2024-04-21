@@ -27,9 +27,9 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "node scripts/prepare.js",
+    "pre": "node scripts/prepare.js",
     "clean": "node scripts/clean.js",
-    "build": "pnpm run prepare && tsup src/main.ts --format cjs,esm --dts",
+    "build": "pnpm run pre && tsup src/main.ts --format cjs,esm --dts",
     "build:clean": "pnpm run build && pnpm run clean"
   },
   "main": "./dist/main.js",
@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@mys/m-rpc": "npm:@mys-x/m-rpc@^0.12.1"
+    "@mys-x/m-rpc": "^0.12.1"
   },
   "devDependencies": {
     "@okikio/transferables": "npm:@jsr/okikio__transferables@^1.0.2",

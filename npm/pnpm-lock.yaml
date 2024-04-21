@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@mys/m-rpc':
-        specifier: npm:@mys-x/m-rpc@^0.12.1
-        version: '@mys-x/m-rpc@0.12.1'
+      '@mys-x/m-rpc':
+        specifier: ^0.12.1
+        version: 0.12.1
     devDependencies:
       '@okikio/transferables':
         specifier: npm:@jsr/okikio__transferables@^1.0.2
