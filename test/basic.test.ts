@@ -1,6 +1,6 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertIsError } from "@std/assert";
 import { useWorkerFn } from "../src/main.ts";
-import type { Add, Fib, Redefine, ThrowErr } from "./basic.test.worker.ts";
+import type { Add, Fib, ThrowErr } from "./basic.test.worker.ts";
 import type { Add as Add2 } from "./basic.test.worker.another.ts";
 
 Deno.test({
@@ -48,43 +48,15 @@ Deno.test({
         try {
           await throwErr("This is an error threw by the worker function!");
         } catch (err) {
-          assertEquals(
-            (err as Error).message,
-            'The worker function "throwErr" throws an exception.',
+          assertIsError(
+            err,
+            undefined,
+            'The worker function "throwErr" throws an error.',
           );
-        }
-      });
-
-      await t.step("no undefined name", async () => {
-        const undefinedName = useWorkerFn(
-          "undefinedName",
-          new Worker(new URL("./basic.test.worker.ts", import.meta.url), {
-            type: "module",
-          }),
-        );
-        try {
-          await undefinedName();
-        } catch (err) {
-          assertEquals(
-            ((err as Error).cause as Error).message,
-            'The name "undefinedName" is not defined in namespace "fn".',
-          );
-        }
-      });
-
-      await t.step("no redefined name", async () => {
-        const redefine = useWorkerFn<Redefine>(
-          "redefine",
-          new Worker(new URL("./basic.test.worker.ts", import.meta.url), {
-            type: "module",
-          }),
-        );
-        try {
-          await redefine();
-        } catch (err) {
-          assertEquals(
-            ((err as Error).cause as Error).message,
-            'The name "redefine" has already been defined in namespace "fn".',
+          assertIsError(
+            err.cause,
+            undefined,
+            "This is an error threw by the worker function!",
           );
         }
       });
@@ -112,7 +84,7 @@ Deno.test({
         } catch (err) {
           assertEquals(
             ((err as Error).cause as Error).message,
-            'The name "fib" is not defined in namespace "fn".',
+            'The function name "fib" is not defined.',
           );
         }
       });

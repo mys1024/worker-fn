@@ -1,12 +1,5 @@
-import type { MsgPort } from "./rpc/types.ts";
-import { RpcAgent } from "./rpc/rpc.ts";
-import type {
-  AnyFn,
-  InternalFns,
-  ProxyFn,
-  ProxyFns,
-  UseWorkerFnOpts,
-} from "./types.ts";
+import { MRpc, type NodeWorkerOrNodeMessagePort } from "@mys/m-rpc";
+import type { AnyFn, CallOptions, ProxyFn, ProxyFns } from "./types.ts";
 
 /* -------------------------------------------------- useWorkerFn() -------------------------------------------------- */
 
@@ -20,18 +13,26 @@ import type {
  */
 export function useWorkerFn<FN extends AnyFn>(
   name: string,
-  worker: MsgPort,
-  options: UseWorkerFnOpts<FN> = {},
+  worker: Worker | NodeWorkerOrNodeMessagePort,
+  options?: CallOptions<FN>,
 ): ProxyFn<FN> {
-  const { transfer } = options;
-  const rpcAgent = RpcAgent.getRpcAgent(worker);
-  // the proxy function
-  function fn(...args: Parameters<FN>) {
-    return rpcAgent.callRemoteFn(name, args, {
-      namespace: "fn",
-      transfer,
-    });
-  }
+  const rpc = MRpc.ensureMRpc(worker);
+  const _fn = rpc.useRemoteFn(name, options);
+  const fn = (async (...args) => {
+    try {
+      return await _fn(...args);
+    } catch (err) {
+      // overwrite the error message
+      if (
+        err instanceof Error &&
+        err.message ===
+          `The remote threw an error when calling the function "${name}".`
+      ) {
+        err.message = `The worker function "${name}" throws an error.`;
+      }
+      throw err;
+    }
+  }) as ProxyFn<FN>;
   return fn;
 }
 
@@ -45,26 +46,13 @@ export function useWorkerFn<FN extends AnyFn>(
  * @returns Proxy functions.
  */
 export function useWorkerFns<FNS extends Record<string, AnyFn>>(
-  worker: MsgPort,
-  options: {
-    [NAME in keyof FNS]?: UseWorkerFnOpts<FNS[NAME]>;
-  } = {},
+  worker: Worker | NodeWorkerOrNodeMessagePort,
+  options?: {
+    [NAME in keyof FNS]?: CallOptions<FNS[NAME]>;
+  },
 ): ProxyFns<FNS> {
-  const memo = new Map<string, ProxyFn<AnyFn>>();
-  const fns = new Proxy({}, {
-    get(_target, name) {
-      if (typeof name !== "string") {
-        throw new Error("The name must be a string.", { cause: name });
-      }
-      if (memo.has(name)) {
-        return memo.get(name);
-      }
-      const fn = useWorkerFn(name, worker, options[name]);
-      memo.set(name, fn);
-      return fn;
-    },
-  });
-  return fns as ProxyFns<FNS>;
+  const rpc = MRpc.ensureMRpc(worker);
+  return rpc.useRemoteFns(options);
 }
 
 /* -------------------------------------------------- inspectWorker() -------------------------------------------------- */
@@ -75,12 +63,13 @@ export function useWorkerFns<FNS extends Record<string, AnyFn>>(
  * @param worker A worker instance.
  * @returns Information about the worker.
  */
-export async function inspectWorker(worker: MsgPort): Promise<{
-  names: string[];
+export async function inspectWorker(
+  worker: Worker | NodeWorkerOrNodeMessagePort,
+): Promise<{
+  names: string[] | undefined;
 }> {
-  const rpcAgent = RpcAgent.getRpcAgent(worker);
-  const names = await rpcAgent.callRemoteFn<InternalFns["names"]>("names", [], {
-    namespace: "fn-internal",
-  });
-  return { names };
+  const rpc = MRpc.ensureMRpc(worker);
+  return {
+    names: await rpc.getRemoteFnNames(),
+  };
 }

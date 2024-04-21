@@ -31,11 +31,12 @@
     "denoland",
     "lcov",
     "minzip",
-    "tsup",
+    "mrpc",
     "okikio",
     "pnpx",
     "runtimes",
     "Transferables",
+    "tsup",
     "typeof"
   ]
 }

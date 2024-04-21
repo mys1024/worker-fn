@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  '@mys/m-rpc':
+    specifier: npm:@mys-x/m-rpc@^0.12.1
+    version: /@mys-x/m-rpc@0.12.1
+
 devDependencies:
   '@okikio/transferables':
     specifier: npm:@jsr/okikio__transferables@^1.0.2
@@ -269,6 +274,10 @@ packages:
   /@jsr/okikio__transferables@1.0.2:
     resolution: {integrity: sha512-Ssz8Hd7/GtM1vIX3vRBr08d2eOBHnGG8KmW1pKe5pYvvfv7Gh8sCHWorBDOWIr9r+CoSQbKU1N5yymNh9sWsXA==, tarball: https://npm.jsr.io/~/7/@jsr/okikio__transferables/1.0.2.tgz}
     dev: true
+
+  /@mys-x/m-rpc@0.12.1:
+    resolution: {integrity: sha512-TLKU3pA3ua6AwaTNnij2nW23z5ndL4qmJHhVfPruNozQ+7A4zfCtU0i+Gvmu22mRimqzDnwV0/gbUFeV/5fhhw==}
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
