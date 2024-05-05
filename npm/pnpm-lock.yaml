@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@mys-x/m-rpc':
-        specifier: ^0.12.1
-        version: 0.12.1
+        specifier: ^0.12.2
+        version: 0.12.2
     devDependencies:
       '@okikio/transferables':
         specifier: npm:@jsr/okikio__transferables@^1.0.2
@@ -187,8 +187,8 @@ packages:
   '@jsr/okikio__transferables@1.0.2':
     resolution: {integrity: sha512-Ssz8Hd7/GtM1vIX3vRBr08d2eOBHnGG8KmW1pKe5pYvvfv7Gh8sCHWorBDOWIr9r+CoSQbKU1N5yymNh9sWsXA==, tarball: https://npm.jsr.io/~/7/@jsr/okikio__transferables/1.0.2.tgz}
 
-  '@mys-x/m-rpc@0.12.1':
-    resolution: {integrity: sha512-TLKU3pA3ua6AwaTNnij2nW23z5ndL4qmJHhVfPruNozQ+7A4zfCtU0i+Gvmu22mRimqzDnwV0/gbUFeV/5fhhw==}
+  '@mys-x/m-rpc@0.12.2':
+    resolution: {integrity: sha512-f2K6zx58zJXb+SAPWVouflVxJJGozQI9uFEnP2RBIAKoWY8KPDQ+qUCl2+Q3z8/azmivyj25746nKLn7UIDdVg==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -793,7 +793,7 @@ snapshots:
 
   '@jsr/okikio__transferables@1.0.2': {}
 
-  '@mys-x/m-rpc@0.12.1': {}
+  '@mys-x/m-rpc@0.12.2': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:

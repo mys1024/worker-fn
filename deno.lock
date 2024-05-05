@@ -2,15 +2,14 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "jsr:@mys/m-rpc@^0.12.1": "jsr:@mys/m-rpc@0.12.1",
+      "jsr:@mys/m-rpc@^0.12.2": "jsr:@mys/m-rpc@0.12.2",
       "jsr:@okikio/transferables@^1.0.2": "jsr:@okikio/transferables@1.0.2",
       "jsr:@std/assert@0.217": "jsr:@std/assert@0.217.0",
-      "jsr:@std/fmt@^0.217.0": "jsr:@std/fmt@0.217.0",
-      "npm:@types/node": "npm:@types/node@18.16.19"
+      "jsr:@std/fmt@^0.217.0": "jsr:@std/fmt@0.217.0"
     },
     "jsr": {
-      "@mys/m-rpc@0.12.1": {
-        "integrity": "19a1f8e1fed7552d32bfd5be5d26f982e8cd65e4b0666d05e88fcbb1fb4be20a",
+      "@mys/m-rpc@0.12.2": {
+        "integrity": "36599d3d4708db9f5c0f7da35a17b7e7da1fafddb69de6cfcdc6afe94cd4f084",
         "dependencies": [
           "jsr:@okikio/transferables@^1.0.2"
         ]
@@ -27,18 +26,12 @@
       "@std/fmt@0.217.0": {
         "integrity": "cb99f82500b8da20202fedfa8bb94dd0222e81f0494ed9087de20ee3d8a39a8d"
       }
-    },
-    "npm": {
-      "@types/node@18.16.19": {
-        "integrity": "sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==",
-        "dependencies": {}
-      }
     }
   },
   "remote": {},
   "workspace": {
     "dependencies": [
-      "jsr:@mys/m-rpc@^0.12.1",
+      "jsr:@mys/m-rpc@^0.12.2",
       "jsr:@okikio/transferables@^1.0.2",
       "jsr:@std/assert@0.217"
     ]
